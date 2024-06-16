@@ -28,6 +28,7 @@ export async function buildPackage(
   process.env.INSIDE_BUILDC = "true";
 
   const monorepo = await readMonorepo(cwd);
+  consola.debug("Monorepo:", monorepo);
 
   const targetPkg = monorepo.packages.find((pkg) => pkg.dir === cwd);
   if (targetPkg == null)
