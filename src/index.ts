@@ -31,7 +31,10 @@ export async function buildPackage(
 
   const targetPkg = monorepo.packages.find((pkg) => pkg.dir === cwd);
   if (targetPkg == null)
-    throw Error("Working directory is not apart of the monorepo");
+    throw Error(
+      "Could not detect package to build. Working directory must be in a package: " +
+        cwd,
+    );
   consola.debug("Target package:", targetPkg);
 
   const graph = buildMonorepoGraph(monorepo);
