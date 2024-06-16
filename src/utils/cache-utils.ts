@@ -1,6 +1,6 @@
 import consola from "consola";
-import { glob } from "fast-glob";
-import { readFile } from "fs-extra";
+import glob from "fast-glob";
+import fs from "fs-extra";
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
 
@@ -17,7 +17,7 @@ export async function hashDir(
   const fileHashes = (
     await Promise.all(
       files.sort().map(async (file) => {
-        const text = await readFile(resolve(dir, file), "utf8");
+        const text = await fs.readFile(resolve(dir, file), "utf8");
         const hash = md5(text);
         return `${hash}-${file}`;
       }),

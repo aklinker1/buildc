@@ -1,8 +1,8 @@
 import { DepGraph } from "dependency-graph";
 import type { Monorepo, Package } from "../types";
-import { exists, readFile } from "fs-extra";
+import fs from "fs-extra";
 import { dirname, join } from "node:path";
-import { glob } from "fast-glob";
+import glob from "fast-glob";
 import YAML from "yaml";
 import { resolve } from "node:path";
 
@@ -11,7 +11,7 @@ export async function readMonorepo(dir: string): Promise<Monorepo> {
   let packages: Package[];
   if (packageManager === "pnpm") {
     const workspace: { packages: string[] } = YAML.parse(
-      await readFile(join(rootDir, "pnpm-workspace.yaml"), "utf8"),
+      await fs.readFile(join(rootDir, "pnpm-workspace.yaml"), "utf8"),
     );
     const dirs = await glob(workspace.packages, {
       cwd: rootDir,
@@ -33,7 +33,7 @@ export async function readMonorepo(dir: string): Promise<Monorepo> {
 async function findWorkspaceRoot(
   currentDir: string,
 ): Promise<{ packageManager: "pnpm"; rootDir: string }> {
-  if (await exists(join(currentDir, "pnpm-workspace.yaml")))
+  if (await fs.exists(join(currentDir, "pnpm-workspace.yaml")))
     return {
       packageManager: "pnpm",
       rootDir: currentDir,
@@ -49,7 +49,9 @@ async function findWorkspaceRoot(
 }
 
 async function readPackage(dir: string): Promise<Package> {
-  const pkgJson = JSON.parse(await readFile(join(dir, "package.json"), "utf8"));
+  const pkgJson = JSON.parse(
+    await fs.readFile(join(dir, "package.json"), "utf8"),
+  );
   return {
     dir,
     name: pkgJson.name,

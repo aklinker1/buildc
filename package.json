@@ -41,7 +41,10 @@
     "email": "aaronklinker1+wxt@gmail.com"
   },
   "license": "MIT",
-  "files": ["bin", "dist"],
+  "files": [
+    "bin",
+    "dist"
+  ],
   "bin": {
     "buildc": "./bin/buildc.mjs"
   },
@@ -56,6 +59,8 @@
   },
   "packageManager": "pnpm@8.15.8",
   "unbuild": {
-    "entries": ["./src/cli.ts"]
+    "entries": [
+      "./src/cli.ts"
+    ]
   }
 }

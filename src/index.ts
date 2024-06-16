@@ -2,7 +2,7 @@ import { buildMonorepoGraph, readMonorepo } from "./utils/monorepo-utils";
 import { getGraphString } from "./utils/log-utils";
 import consola from "consola";
 import { execSync } from "node:child_process";
-import { copy, exists, mkdir } from "fs-extra";
+import fs from "fs-extra";
 import type { Monorepo, Package } from "./types";
 import { hashDir } from "./utils/cache-utils";
 import { relative, resolve } from "node:path";
@@ -14,7 +14,7 @@ export type { BuildcOptions } from "./types";
  */
 export async function buildPackage(
   command: string,
-  _depsOnly = false,
+  depsOnly = false,
 ): Promise<void> {
   // Do a regular build if called inside another buildc command - in this case,
   // we know all dependencies have already been built, and we're only calling
@@ -41,7 +41,10 @@ export async function buildPackage(
   });
   consola.debug("Dependency Graph:", getGraphString(graph));
 
-  const toBuild = graph.overallOrder();
+  let toBuild = graph.overallOrder();
+  if (depsOnly) {
+    toBuild = toBuild.filter((pkg) => pkg !== targetPkg.name);
+  }
   consola.debug("Build order:", toBuild);
 
   for (const _pkgName of toBuild) {
@@ -62,9 +65,9 @@ async function buildCached(
   try {
     consola.start(`${pkg.name} \`${command}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);
-    if (pkg.options.cachable === true && (await exists(cacheDir))) {
-      await mkdir(pkg.options.outDir, { recursive: true });
-      await copy(cacheDir, pkg.options.outDir);
+    if (pkg.options.cachable === true && (await fs.exists(cacheDir))) {
+      await fs.ensureDir(pkg.options.outDir);
+      await fs.copy(cacheDir, pkg.options.outDir);
       consola.success(`${pkg.name} cached!`);
     } else {
       execSync(command, {
@@ -75,8 +78,8 @@ async function buildCached(
           INSIDE_BUILDC: "true",
         },
       });
-      await mkdir(cacheDir, { recursive: true });
-      await copy(pkg.options.outDir, cacheDir);
+      await fs.ensureDir(cacheDir);
+      await fs.copy(pkg.options.outDir, cacheDir);
       consola.success(`${pkg.name}`);
     }
   } catch (err) {
