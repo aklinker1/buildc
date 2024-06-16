@@ -1,0 +1,7 @@
+.cache
+coverage
+*.lcov
+node_modules/
+*.tgz
+dist
+.DS_Store

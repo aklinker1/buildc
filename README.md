@@ -42,13 +42,9 @@ Each `package.json` can have a `buildc` field where you can configure options. L
     // The directory where your build is output to
     "outDir": "dist",
     // List of glob patterns to include when checking if the package needs rebuilt
-    "include": ["'src/**/*'"],
+    "include": ["src/**/*"],
     // List of glob patterns to ignore when checking if the package needs rebuilt
-    "exclude": [
-      '**/__tests__/**',
-      '**/*.test.*',
-      '**/e2e/**',
-    ],
+    "exclude": ["**/__tests__/**", "**/*.test.*", "**/e2e/**"],
   },
 }
 ```
