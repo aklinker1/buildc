@@ -18,7 +18,9 @@ export async function readMonorepo(dir: string): Promise<Monorepo> {
       absolute: true,
       onlyDirectories: true,
     });
-    packages = await Promise.all(dirs.map(readPackage));
+    packages = (await Promise.all(dirs.map(readPackage))).filter(
+      (pkg) => !!pkg,
+    ) as Package[];
   } else {
     throw Error("Unknown package manager: " + packageManager);
   }
@@ -48,10 +50,13 @@ async function findWorkspaceRoot(
   return findWorkspaceRoot(parentDir);
 }
 
-async function readPackage(dir: string): Promise<Package> {
-  const pkgJson = JSON.parse(
-    await fs.readFile(join(dir, "package.json"), "utf8"),
-  );
+async function readPackage(dir: string): Promise<Package | undefined> {
+  const pkgJsonText = await fs
+    .readFile(join(dir, "package.json"), "utf8")
+    .catch(() => void 0);
+  if (pkgJsonText == null) return;
+
+  const pkgJson = JSON.parse(pkgJsonText);
   return {
     dir,
     name: pkgJson.name,
