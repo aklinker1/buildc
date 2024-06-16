@@ -3,10 +3,20 @@
   "description": "Zero config CLI tool for caching and orchestrating builds in monorepos",
   "version": "0.1.0",
   "type": "module",
+  "packageManager": "pnpm@8.15.8",
   "scripts": {
     "buildc": "bun src/cli.ts",
     "build": "unbuild",
     "test": "bun test --watch"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "consola": "^3.2.3",
+    "dependency-graph": "^1.0.0",
+    "fast-glob": "^3.3.2",
+    "fs-extra": "^11.2.0",
+    "ohash": "^1.1.3",
+    "yaml": "^2.4.5"
   },
   "devDependencies": {
     "@aklinker1/check": "^1.3.1",
@@ -24,43 +34,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wxt-dev/wxt"
+    "url": "https://github.com/aklinekr1/buildc"
   },
   "homepage": "https://wxt.dev",
-  "keywords": [
-    "vite",
-    "chrome",
-    "web",
-    "extension",
-    "browser",
-    "bundler",
-    "framework"
-  ],
+  "keywords": ["monorepo", "build", "cache"],
   "author": {
     "name": "Aaron Klinker",
-    "email": "aaronklinker1+wxt@gmail.com"
+    "email": "aaronklinker1+github@gmail.com"
   },
   "license": "MIT",
-  "files": [
-    "bin",
-    "dist"
-  ],
+  "files": ["bin", "dist"],
   "bin": {
     "buildc": "./bin/buildc.mjs"
   },
-  "dependencies": {
-    "cac": "^6.7.14",
-    "consola": "^3.2.3",
-    "dependency-graph": "^1.0.0",
-    "fast-glob": "^3.3.2",
-    "fs-extra": "^11.2.0",
-    "ohash": "^1.1.3",
-    "yaml": "^2.4.5"
-  },
-  "packageManager": "pnpm@8.15.8",
   "unbuild": {
-    "entries": [
-      "./src/cli.ts"
-    ]
+    "entries": ["./src/cli.ts"]
   }
 }
