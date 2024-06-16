@@ -59,6 +59,26 @@ export async function buildPackage(
   }
 }
 
+export async function buildAllPackages(): Promise<void> {
+  const cwd = process.cwd();
+  const monorepo = await readMonorepo(cwd);
+  const graph = buildMonorepoGraph(monorepo);
+  consola.debug("Dependency Graph:\n" + getGraphString(graph));
+
+  let toBuild = graph.overallOrder();
+  consola.debug("Build order:", toBuild);
+
+  for (const _pkgName of toBuild) {
+    const pkg = graph.getNodeData(_pkgName);
+    await buildCached(monorepo, pkg, [
+      monorepo.packageManager,
+      "-s",
+      "run",
+      "build",
+    ]);
+  }
+}
+
 async function buildCached(
   monorepo: Monorepo,
   pkg: Package,

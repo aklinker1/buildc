@@ -1,6 +1,6 @@
 import cac from "cac";
 import { version, name } from "../package.json";
-import { buildPackage } from ".";
+import { buildPackage, buildAllPackages } from ".";
 import { readMonorepo, buildMonorepoGraph } from "./utils/monorepo-utils";
 import fs from "fs-extra";
 import { getGraphString } from "./utils/log-utils";
@@ -20,6 +20,11 @@ cli
   .action((flags) => {
     return buildPackage(flags["--"], flags.depsOnly);
   });
+
+// ALL
+cli.command("all", "Build all packages").action((flags) => {
+  return buildAllPackages(flags["--"], flags.depsOnly);
+});
 
 // CLEAN
 cli.command("clean", "Clean cache directory").action(async () => {
