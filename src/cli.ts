@@ -22,9 +22,7 @@ cli
   });
 
 // ALL
-cli.command("all", "Build all packages").action((flags) => {
-  return buildAllPackages(flags["--"], flags.depsOnly);
-});
+cli.command("all", "Build all packages").action(() => buildAllPackages());
 
 // CLEAN
 cli.command("clean", "Clean cache directory").action(async () => {
