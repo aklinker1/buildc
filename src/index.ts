@@ -39,7 +39,7 @@ export async function buildPackage(
   graph.entryNodes().forEach((entry) => {
     if (entry !== targetPkg.name) graph.removeNode(entry);
   });
-  consola.debug("Dependency Graph:", getGraphString(graph));
+  consola.debug("Dependency Graph:\n" + getGraphString(graph));
 
   let toBuild = graph.overallOrder();
   if (depsOnly) {
