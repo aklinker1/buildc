@@ -1,9 +1,16 @@
 # buildc
 
-Cache build output and orchastrate dependency builds in monorepos.
+Zero config CLI tool for caching and orchestrating builds in monorepos.
 
 ```sh
 pnpm i -D buildc
+```
+
+Then prefix any build commands you want to cache with `buildc`:
+
+```diff
+-"build": "unbuild --minify",
++"build": "buildc \"unbuild --minify\"",
 ```
 
 Supports:
@@ -14,13 +21,6 @@ Supports:
 > Note that this is a personal tool, and I only plan on supporting the tools I use. If you want to add support for NPM or Yarn, feel free to open a PR!
 
 ## Usage
-
-Replace the build command in your package's `package.json` like so:
-
-```diff
--"build": "unbuild --minify",
-+"build": "buildc \"unbuild --minify\"",
-```
 
 When you run the build script, it will:
 

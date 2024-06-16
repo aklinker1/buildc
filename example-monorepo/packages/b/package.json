@@ -1,7 +1,7 @@
 {
   "name": "b",
   "scripts": {
-    "build": "bun ../../../src/cli/index.ts \"tsup src/index.ts\""
+    "build": "bun ../../../src/cli.ts \"tsup src/index.ts\""
   },
   "dependencies": {
     "tsup": "^8.1.0",

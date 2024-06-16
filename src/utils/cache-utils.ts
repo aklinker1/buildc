@@ -1,6 +1,6 @@
 import consola from "consola";
 import { glob } from "fast-glob";
-import { readFile } from "node:fs/promises";
+import { readFile } from "fs-extra";
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
 

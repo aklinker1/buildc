@@ -1,6 +1,6 @@
 import { DepGraph } from "dependency-graph";
 import type { Monorepo, Package } from "../types";
-import { exists, readFile } from "node:fs/promises";
+import { exists, readFile } from "fs-extra";
 import { dirname, join } from "node:path";
 import { glob } from "fast-glob";
 import YAML from "yaml";

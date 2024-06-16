@@ -1,5 +1,5 @@
 import { buildMonorepoGraph, readMonorepo } from "./utils/monorepo-utils";
-import { debugGraph } from "./utils/log-utils";
+import { getGraphString } from "./utils/log-utils";
 import consola from "consola";
 import { execSync } from "node:child_process";
 import { copy, exists, mkdir } from "fs-extra";
@@ -12,7 +12,10 @@ export type { BuildcOptions } from "./types";
 /**
  * Builds a package and all it's dependencies.
  */
-export async function buildPackage(command: string): Promise<void> {
+export async function buildPackage(
+  command: string,
+  _depsOnly = false,
+): Promise<void> {
   // Do a regular build if called inside another buildc command - in this case,
   // we know all dependencies have already been built, and we're only calling
   // this function if the cache was missing.
@@ -36,7 +39,7 @@ export async function buildPackage(command: string): Promise<void> {
   graph.entryNodes().forEach((entry) => {
     if (entry !== targetPkg.name) graph.removeNode(entry);
   });
-  debugGraph(graph);
+  consola.debug("Dependency Graph:", getGraphString(graph));
 
   const toBuild = graph.overallOrder();
   consola.debug("Build order:", toBuild);
