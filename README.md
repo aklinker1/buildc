@@ -6,14 +6,14 @@ Zero config CLI tool for caching and orchestrating builds in monorepos.
 pnpm i -D buildc
 ```
 
-Then prefix any build commands you want to cache with `buildc -- `:
+Then prefix any package-specific build commands you want to cache with `buildc -- `:
 
 ```diff
 -"build": "unbuild --minify",
 +"build": "buildc -- unbuild --minify",
 ```
 
-`build` also supports only building the package's dependencies, not the package itself. You can use this by adding `buildc --deps-only -- ` before any scripts that needs the dependencies built before running, like tests:
+`build` also supports only building the package's dependencies, not the package itself. Add `buildc --deps-only -- ` before any scripts that needs the dependencies built before running, like tests:
 
 ```diff
 -"build": "vitest",
