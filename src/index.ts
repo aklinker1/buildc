@@ -16,17 +16,17 @@ export async function buildPackage(
   command: string[],
   depsOnly = false,
 ): Promise<void> {
+  const cwd = process.cwd();
+
   // Do a regular build if called inside another buildc command - in this case,
   // we know all dependencies have already been built, and we're only calling
   // this function if the cache was missing.
   if (process.env.INSIDE_BUILDC) {
     consola.log(`\x1b[2m  > ${command.join(" ")}\x1b[0m`);
-    spawnSync(command[0], command.slice(1), { stdio: "inherit" });
-    return;
+    return execCommand(cwd, command);
   }
   process.env.INSIDE_BUILDC = "true";
 
-  const cwd = process.cwd();
   const monorepo = await readMonorepo(cwd);
 
   const targetPkg = monorepo.packages.find((pkg) => pkg.dir === cwd);
@@ -60,6 +60,13 @@ export async function buildPackage(
         : [monorepo.packageManager, "-s", "run", "build"],
     );
   }
+
+  if (depsOnly) {
+    // When using --deps-only, the command after -- needs to be ran manually,
+    // since it was excluded above
+    consola.info(`${targetPkg.name}: \`${command.join(" ")}\``);
+    execCommand(targetPkg.dir, command);
+  }
 }
 
 export async function buildAllPackages(): Promise<void> {
@@ -88,12 +95,12 @@ async function buildCached(
   command: string[],
 ): Promise<void> {
   try {
-    consola.start(`${pkg.name} \`${command.join(" ")}\``);
+    consola.start(`${pkg.name}: \`${command.join(" ")}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);
     if (pkg.options.cachable === true && (await fs.exists(cacheDir))) {
       await fs.ensureDir(pkg.options.outDir);
       await fs.copy(cacheDir, pkg.options.outDir);
-      consola.success(`${pkg.name} cached!`);
+      consola.success(`${pkg.name}: Cached!`);
     } else {
       spawnSync(command[0], command.slice(1), {
         cwd: pkg.dir,
@@ -108,7 +115,7 @@ async function buildCached(
       consola.success(`${pkg.name}`);
     }
   } catch (err) {
-    consola.fail(`${pkg.name}`);
+    consola.fail(`${pkg.name}: Failed`);
     console.error(err);
     process.exit(1);
   }
@@ -122,4 +129,8 @@ async function getCacheDir(monorepo: Monorepo, pkg: Package): Promise<string> {
     hash,
   );
   return cacheDir;
+}
+
+function execCommand(cwd: string, command: string[]) {
+  spawnSync(command[0], command.slice(1), { stdio: "inherit", cwd });
 }
