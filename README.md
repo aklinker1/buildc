@@ -13,21 +13,19 @@ Then prefix any build commands you want to cache with `buildc -- `:
 +"build": "buildc -- unbuild --minify",
 ```
 
-Supports:
+`build` also supports only building the package's dependencies, not the package itself. You can use this by adding `buildc --deps-only -- ` before any scripts that needs the dependencies built before running, like tests:
+
+```diff
+-"build": "vitest",
++"build": "buildc --deps-only -- vitest",
+```
+
+##### Supports:
 
 - [x] PNPM workspaces
 - [ ] Bun workspaces
 
 > Note that this is a personal tool, and I only plan on supporting the tools I use. If you want to add support for NPM or Yarn, feel free to open a PR!
-
-## Usage
-
-When you run the build script, it will:
-
-1. Detect workspace dependencies and run their `build` scripts
-2. Run the build script you provided or restore a previous build from cache
-
-If the other dependencies also use `buildc`, you can get a fully cached, instant build.
 
 ## Config
 
