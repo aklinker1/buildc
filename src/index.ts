@@ -1,7 +1,7 @@
 import { buildMonorepoGraph, readMonorepo } from "./utils/monorepo-utils";
 import { getGraphString } from "./utils/log-utils";
 import consola from "consola";
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import fs from "fs-extra";
 import type { Monorepo, Package } from "./types";
 import { hashDir } from "./utils/cache-utils";
@@ -13,15 +13,15 @@ export type { BuildcOptions } from "./types";
  * Builds a package and all it's dependencies.
  */
 export async function buildPackage(
-  command: string,
+  command: string[],
   depsOnly = false,
 ): Promise<void> {
   // Do a regular build if called inside another buildc command - in this case,
   // we know all dependencies have already been built, and we're only calling
   // this function if the cache was missing.
   if (process.env.INSIDE_BUILDC) {
-    consola.log(`\x1b[2m  > ${command}\x1b[0m`);
-    execSync(command, { stdio: "inherit" });
+    consola.log(`\x1b[2m  > ${command.join(" ")}\x1b[0m`);
+    spawnSync(command[0], command.slice(1), { stdio: "inherit" });
     return;
   }
   process.env.INSIDE_BUILDC = "true";
@@ -52,7 +52,9 @@ export async function buildPackage(
     await buildCached(
       monorepo,
       pkg,
-      pkg === targetPkg ? command : `${monorepo.packageManager} -s run build`,
+      pkg === targetPkg
+        ? command
+        : [monorepo.packageManager, "-s", "run", "build"],
     );
   }
 }
@@ -60,17 +62,17 @@ export async function buildPackage(
 async function buildCached(
   monorepo: Monorepo,
   pkg: Package,
-  command: string,
+  command: string[],
 ): Promise<void> {
   try {
-    consola.start(`${pkg.name} \`${command}\``);
+    consola.start(`${pkg.name} \`${command.join(" ")}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);
     if (pkg.options.cachable === true && (await fs.exists(cacheDir))) {
       await fs.ensureDir(pkg.options.outDir);
       await fs.copy(cacheDir, pkg.options.outDir);
       consola.success(`${pkg.name} cached!`);
     } else {
-      execSync(command, {
+      spawnSync(command[0], command.slice(1), {
         cwd: pkg.dir,
         stdio: "inherit",
         env: {

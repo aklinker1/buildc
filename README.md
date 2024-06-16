@@ -6,11 +6,11 @@ Zero config CLI tool for caching and orchestrating builds in monorepos.
 pnpm i -D buildc
 ```
 
-Then prefix any build commands you want to cache with `buildc`:
+Then prefix any build commands you want to cache with `buildc -- `:
 
 ```diff
 -"build": "unbuild --minify",
-+"build": "buildc \"unbuild --minify\"",
++"build": "buildc -- unbuild --minify",
 ```
 
 Supports:
