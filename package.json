@@ -1,5 +1,5 @@
 {
-  "name": "buildc",
+  "name": "@aklinker1/buildc",
   "description": "Zero config CLI tool for caching and orchestrating builds in monorepos",
   "version": "0.2.0",
   "type": "module",
