@@ -27,6 +27,12 @@ Then prefix any package-specific build commands you want to cache with `buildc -
 
 > Note that this is a personal tool, and I only plan on supporting the tools I use. If you want to add support for NPM or Yarn, feel free to open a PR!
 
+#### Why Not NX/Turborepo
+
+It's hard to just use the caching feature of NX/Turborepo without completely migrating to the tools, and using them instead of `pnpm`/`bun`, which more developers are familiar with. I found that since build-caching was really the only feature I used from those packages, it wasn't worth migrating to.
+
+Instead, this tools is a simpler version that doesn't add another CLI people have to memorize to use. Well, technically it does, but at the same time, it doesn't get in your way, and I bet people wouldn't even realize it was being called most the time. Which is the goal.
+
 ## Config
 
 Each `package.json` can have a `buildc` field where you can configure options. Listed below are the defaults:
