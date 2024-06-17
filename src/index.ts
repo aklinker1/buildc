@@ -139,5 +139,6 @@ function execCommand(cwd: string, command: string[]) {
       ...process.env,
       INSIDE_BUILDC: "true",
     },
+    shell: true,
   });
 }
