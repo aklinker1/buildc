@@ -1,7 +1,7 @@
 import consola from "consola";
 import glob from "fast-glob";
 import fs from "fs-extra";
-import { resolve } from "node:path";
+import { resolve } from "pathe";
 import { createHash } from "node:crypto";
 
 export async function hashDir(

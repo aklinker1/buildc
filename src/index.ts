@@ -5,7 +5,7 @@ import { spawnSync } from "node:child_process";
 import fs from "fs-extra";
 import type { Monorepo, Package } from "./types";
 import { hashDir } from "./utils/cache-utils";
-import { relative, resolve } from "node:path";
+import { relative, resolve } from "pathe";
 
 export type { BuildcOptions } from "./types";
 
@@ -16,7 +16,7 @@ export async function buildPackage(
   command: string[],
   depsOnly = false,
 ): Promise<void> {
-  const cwd = process.cwd();
+  const cwd = resolve(process.cwd());
 
   // Do a regular build if called inside another buildc command - in this case,
   // we know all dependencies have already been built, and we're only calling

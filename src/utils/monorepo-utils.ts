@@ -1,10 +1,9 @@
 import { DepGraph } from "dependency-graph";
 import type { Monorepo, Package } from "../types";
 import fs from "fs-extra";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "pathe";
 import glob from "fast-glob";
 import YAML from "yaml";
-import { resolve } from "node:path";
 
 export async function readMonorepo(dir: string): Promise<Monorepo> {
   const { packageManager, rootDir } = await findWorkspaceRoot(dir);
