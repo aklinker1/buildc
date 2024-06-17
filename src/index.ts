@@ -103,16 +103,15 @@ async function buildCached(
       await fs.copy(cacheDir, pkg.options.outDir);
       consola.success(`${pkg.name}: Cached!`);
     } else {
-      spawnSync(command[0], command.slice(1), {
-        cwd: pkg.dir,
-        stdio: "inherit",
-        env: {
-          ...process.env,
-          INSIDE_BUILDC: "true",
-        },
-      });
-      await fs.ensureDir(cacheDir);
-      await fs.copy(pkg.options.outDir, cacheDir);
+      execCommand(pkg.dir, command);
+      try {
+        await fs.ensureDir(cacheDir);
+        await fs.copy(pkg.options.outDir, cacheDir);
+      } catch (err) {
+        consola.debug(
+          "Failed to copy cache, command probably didn't create an output.",
+        );
+      }
       consola.success(`${pkg.name}`);
     }
   } catch (err) {
@@ -133,5 +132,12 @@ async function getCacheDir(monorepo: Monorepo, pkg: Package): Promise<string> {
 }
 
 function execCommand(cwd: string, command: string[]) {
-  spawnSync(command[0], command.slice(1), { stdio: "inherit", cwd });
+  spawnSync(command[0], command.slice(1), {
+    stdio: "inherit",
+    cwd,
+    env: {
+      ...process.env,
+      INSIDE_BUILDC: "true",
+    },
+  });
 }
