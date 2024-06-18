@@ -132,7 +132,7 @@ async function getCacheDir(monorepo: Monorepo, pkg: Package): Promise<string> {
 }
 
 function execCommand(cwd: string, command: string[]) {
-  spawnSync(command[0], command.slice(1), {
+  const { error } = spawnSync(command[0], command.slice(1), {
     stdio: "inherit",
     cwd,
     env: {
@@ -141,4 +141,5 @@ function execCommand(cwd: string, command: string[]) {
     },
     shell: true,
   });
+  if (error) throw error;
 }
