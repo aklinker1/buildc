@@ -132,7 +132,7 @@ async function getCacheDir(monorepo: Monorepo, pkg: Package): Promise<string> {
 }
 
 function execCommand(cwd: string, command: string[]) {
-  const { error } = spawnSync(command[0], command.slice(1), {
+  const { error, status } = spawnSync(command[0], command.slice(1), {
     stdio: "inherit",
     cwd,
     env: {
@@ -142,4 +142,5 @@ function execCommand(cwd: string, command: string[]) {
     shell: true,
   });
   if (error) throw error;
+  if (status !== 0) throw Error("Commaned exited with code " + status);
 }
