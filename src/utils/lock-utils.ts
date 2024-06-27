@@ -16,7 +16,8 @@ export async function withLock<T>(
   await fs.writeFile(lockfilePath, "");
 
   // For some reason, the built-in retry system didn't work... So I did a DIY one.
-  const tryGetLock = () => lock(lockfilePath).catch(() => void 0);
+  const tryGetLock = () =>
+    lock(lockfilePath, { stale: ttl }).catch(() => void 0);
 
   let release = await tryGetLock();
   if (!release)
