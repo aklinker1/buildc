@@ -107,7 +107,6 @@ async function buildCached(
     consola.start(`${pkg.name}: \`${command.join(" ")}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);
     if (pkg.options.cachable === true && (await fs.exists(cacheDir))) {
-      consola.debug("Copying cached output...");
       await fs.ensureDir(pkg.options.outDir);
       await fs.copy(cacheDir, pkg.options.outDir);
       consola.success(`${pkg.name}: Cached!`);
@@ -115,7 +114,6 @@ async function buildCached(
       execCommand(pkg.dir, command);
       try {
         await fs.ensureDir(cacheDir);
-        consola.debug("Caching build output...");
         await fs.copy(pkg.options.outDir, cacheDir);
       } catch (err) {
         consola.debug(
@@ -126,9 +124,7 @@ async function buildCached(
     }
   } catch (err) {
     consola.fail(`${pkg.name}: Failed`);
-    consola.error(err);
     console.error(err);
-    console.error((err as Error).stack);
     process.exit(1);
   }
 }
