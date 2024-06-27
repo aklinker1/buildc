@@ -16,8 +16,8 @@ Then prefix any package-specific build commands you want to cache with `buildc -
 `build` also supports only building the package's dependencies, not the package itself. Add `buildc --deps-only -- ` before any scripts that needs the dependencies built before running, like tests:
 
 ```diff
--"build": "vitest",
-+"build": "buildc --deps-only -- vitest",
+-"test": "vitest",
++"test": "buildc --deps-only -- vitest",
 ```
 
 ##### Supports:

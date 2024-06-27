@@ -6,6 +6,7 @@ import fs from "fs-extra";
 import type { Monorepo, Package } from "./types";
 import { hashDir } from "./utils/cache-utils";
 import { relative, resolve } from "pathe";
+import { withLock } from "./utils/lock-utils";
 
 export type { BuildcOptions } from "./types";
 
@@ -51,16 +52,23 @@ export async function buildPackage(
   }
   consola.debug("Build order:", toBuild);
 
-  for (const _pkgName of toBuild) {
-    const pkg = graph.getNodeData(_pkgName);
-    await buildCached(
-      monorepo,
-      pkg,
-      pkg === targetPkg
-        ? command
-        : [monorepo.packageManager, "-s", "run", "build"],
-    );
-  }
+  const packages = toBuild.map((pkgName) => graph.getNodeData(pkgName));
+
+  // Use a lockfile to prevent running multiple builds in parallel. PNPM for
+  // example, tries to orchastrate builds in parrallel during post-install,
+  // which can cause problems like files not existing when different processes
+  // delete directories.
+  await withLock(monorepo.cacheDir, async () => {
+    for (const pkg of packages) {
+      await buildCached(
+        monorepo,
+        pkg,
+        pkg === targetPkg
+          ? command
+          : [monorepo.packageManager, "-s", "run", "build"],
+      );
+    }
+  });
 
   if (depsOnly) {
     // When using --deps-only, the command after -- needs to be ran manually,
@@ -99,6 +107,7 @@ async function buildCached(
     consola.start(`${pkg.name}: \`${command.join(" ")}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);
     if (pkg.options.cachable === true && (await fs.exists(cacheDir))) {
+      consola.debug("Copying cached output...");
       await fs.ensureDir(pkg.options.outDir);
       await fs.copy(cacheDir, pkg.options.outDir);
       consola.success(`${pkg.name}: Cached!`);
@@ -106,6 +115,7 @@ async function buildCached(
       execCommand(pkg.dir, command);
       try {
         await fs.ensureDir(cacheDir);
+        consola.debug("Caching build output...");
         await fs.copy(pkg.options.outDir, cacheDir);
       } catch (err) {
         consola.debug(
@@ -116,7 +126,9 @@ async function buildCached(
     }
   } catch (err) {
     consola.fail(`${pkg.name}: Failed`);
+    consola.error(err);
     console.error(err);
+    console.error((err as Error).stack);
     process.exit(1);
   }
 }
