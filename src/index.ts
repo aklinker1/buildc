@@ -68,14 +68,14 @@ export async function buildPackage(
           : [monorepo.packageManager, "-s", "run", "build"],
       );
     }
-  });
 
-  if (depsOnly) {
-    // When using --deps-only, the command after -- needs to be ran manually,
-    // since it was excluded above
-    consola.info(`${targetPkg.name}: \`${command.join(" ")}\``);
-    execCommand(targetPkg.dir, command);
-  }
+    if (depsOnly) {
+      // When using --deps-only, the command after -- needs to be ran manually,
+      // since it was excluded above
+      consola.info(`${targetPkg.name}: \`${command.join(" ")}\``);
+      execCommand(targetPkg.dir, command);
+    }
+  });
 }
 
 export async function buildAllPackages(): Promise<void> {
