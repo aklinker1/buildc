@@ -1,7 +1,7 @@
 {
   "name": "@aklinker1/buildc",
   "description": "Zero config CLI tool for caching and orchestrating builds in monorepos",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "type": "module",
   "packageManager": "pnpm@8.15.8",
   "scripts": {
@@ -41,17 +41,26 @@
     "url": "https://github.com/aklinekr1/buildc"
   },
   "homepage": "https://wxt.dev",
-  "keywords": ["monorepo", "build", "cache"],
+  "keywords": [
+    "monorepo",
+    "build",
+    "cache"
+  ],
   "author": {
     "name": "Aaron Klinker",
     "email": "aaronklinker1+github@gmail.com"
   },
   "license": "MIT",
-  "files": ["bin", "dist"],
+  "files": [
+    "bin",
+    "dist"
+  ],
   "bin": {
     "buildc": "./bin/buildc.mjs"
   },
   "unbuild": {
-    "entries": ["./src/cli.ts"]
+    "entries": [
+      "./src/cli.ts"
+    ]
   }
 }
