@@ -65,7 +65,7 @@ async function readPackage(dir: string): Promise<Package | undefined> {
     },
     options: {
       cachable: true,
-      include: ["src/**/*"],
+      include: ["src/**/*", "package.json"],
       exclude: ["**/__tests__/**", "**/*.test.*", "**/e2e/**"],
       ...pkgJson.buildc,
       outDir: resolve(dir, pkgJson.buildc?.outDir ?? "dist"),
