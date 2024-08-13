@@ -65,7 +65,7 @@ export async function buildPackage(
         pkg,
         pkg === targetPkg
           ? command
-          : [monorepo.packageManager, "-s", "run", "build"],
+          : [monorepo.packageManager, "--silent", "run", "build"],
       );
     }
 
@@ -91,7 +91,7 @@ export async function buildAllPackages(): Promise<void> {
     const pkg = graph.getNodeData(_pkgName);
     await buildCached(monorepo, pkg, [
       monorepo.packageManager,
-      "-s",
+      "--silent",
       "run",
       "build",
     ]);
