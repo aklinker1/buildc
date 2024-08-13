@@ -3,7 +3,6 @@
   "description": "Zero config CLI tool for caching and orchestrating builds in monorepos",
   "version": "1.0.11",
   "type": "module",
-  "packageManager": "pnpm@8.15.8",
   "scripts": {
     "buildc": "bun src/cli.ts",
     "build": "unbuild",
