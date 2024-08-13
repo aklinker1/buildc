@@ -7,38 +7,57 @@ import YAML from "yaml";
 
 export async function readMonorepo(dir: string): Promise<Monorepo> {
   const { packageManager, rootDir } = await findWorkspaceRoot(dir);
-  let packages: Package[];
+  let packagesGlobPattern: string[];
   if (packageManager === "pnpm") {
     const workspace: { packages: string[] } = YAML.parse(
       await fs.readFile(join(rootDir, "pnpm-workspace.yaml"), "utf8"),
     );
-    const dirs = await glob(workspace.packages, {
-      cwd: rootDir,
-      absolute: true,
-      onlyDirectories: true,
-    });
-    packages = (await Promise.all(dirs.map(readPackage))).filter(
-      (pkg) => !!pkg,
-    ) as Package[];
+    packagesGlobPattern = workspace.packages;
+  } else if (packageManager === "bun") {
+    const { workspaces } = JSON.parse(
+      await fs.readFile(join(rootDir, "package.json"), "utf-8"),
+    );
+    packagesGlobPattern = workspaces;
   } else {
     throw Error("Unknown package manager: " + packageManager);
   }
+
+  const dirs = await glob(packagesGlobPattern, {
+    cwd: rootDir,
+    absolute: true,
+    onlyDirectories: true,
+  });
   return {
     packageManager,
     rootDir,
     cacheDir: resolve(rootDir, ".cache"),
-    packages,
+    packages: (await Promise.all(dirs.map(readPackage))).filter(
+      (pkg) => pkg != null,
+    ) as Package[],
   };
 }
 
 async function findWorkspaceRoot(
   currentDir: string,
-): Promise<{ packageManager: "pnpm"; rootDir: string }> {
-  if (await fs.exists(join(currentDir, "pnpm-workspace.yaml")))
+): Promise<{ packageManager: Monorepo["packageManager"]; rootDir: string }> {
+  const pnpmWorkspace = join(currentDir, "pnpm-workspace.yaml");
+  if (await fs.exists(pnpmWorkspace))
     return {
       packageManager: "pnpm",
       rootDir: currentDir,
     };
+  const pkgJson = join(currentDir, "package.json");
+  if (await fs.exists(pkgJson)) {
+    const { workspaces } = JSON.parse(await fs.readFile(pkgJson, "utf-8"));
+    if (workspaces != null) {
+      const bunLockfile = join(currentDir, "bun.lockb");
+      if (await fs.exists(bunLockfile))
+        return {
+          packageManager: "bun",
+          rootDir: currentDir,
+        };
+    }
+  }
 
   // Check if the current directory is the root directory
   const parentDir = dirname(currentDir);
