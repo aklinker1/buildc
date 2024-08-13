@@ -39,7 +39,7 @@ export async function readMonorepo(dir: string): Promise<Monorepo> {
 
 async function findWorkspaceRoot(
   currentDir: string,
-): Promise<{ packageManager: "pnpm" | "bun"; rootDir: string }> {
+): Promise<{ packageManager: Monorepo["packageManager"]; rootDir: string }> {
   const pnpmWorkspace = join(currentDir, "pnpm-workspace.yaml");
   if (await fs.exists(pnpmWorkspace))
     return {
