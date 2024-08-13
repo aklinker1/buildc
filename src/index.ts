@@ -46,10 +46,7 @@ export async function buildPackage(
   });
   consola.debug("Dependency Graph:\n" + getGraphString(graph));
 
-  let toBuild = graph.overallOrder();
-  if (depsOnly) {
-    toBuild = toBuild.filter((pkg) => pkg !== targetPkg.name);
-  }
+  const toBuild = graph.dependenciesOf(targetPkg.name);
   consola.debug("Build order:", toBuild);
 
   const packages = toBuild.map((pkgName) => graph.getNodeData(pkgName));

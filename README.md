@@ -23,7 +23,7 @@ Then prefix any package-specific build commands you want to cache with `buildc -
 ##### Supports:
 
 - [x] PNPM workspaces
-- [ ] Bun workspaces
+- [x] Bun workspaces
 
 > Note that this is a personal tool, and I only plan on supporting the tools I use. If you want to add support for NPM or Yarn, feel free to open a PR!
 
