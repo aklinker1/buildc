@@ -7,6 +7,10 @@ import type { Monorepo, Package } from "./types";
 import { hashDir } from "./utils/cache-utils";
 import { relative, resolve } from "pathe";
 import { withLock } from "./utils/lock-utils";
+import {
+  getPackageDependenciesBuildOrder,
+  getOverallBuildOrder,
+} from "./utils/graph-utils";
 
 export type { BuildcOptions } from "./types";
 
@@ -40,14 +44,10 @@ export async function buildPackage(
   consola.debug("Target package:", targetPkg);
 
   const graph = buildMonorepoGraph(monorepo);
-  // Remove unrelated deps from graph
-  graph.entryNodes().forEach((entry) => {
-    if (entry !== targetPkg.name) graph.removeNode(entry);
-  });
   consola.debug("Dependency Graph:\n" + getGraphString(graph));
 
-  const toBuild = graph.dependenciesOf(targetPkg.name);
-  consola.debug("Build order:", toBuild);
+  const toBuild = getPackageDependenciesBuildOrder(graph, targetPkg.name);
+  consola.debug("Dependency build order:", toBuild);
 
   const packages = toBuild.map((pkgName) => graph.getNodeData(pkgName));
 
@@ -57,20 +57,22 @@ export async function buildPackage(
   // delete directories.
   await withLock(monorepo.cacheDir, async () => {
     for (const pkg of packages) {
-      await buildCached(
-        monorepo,
-        pkg,
-        pkg === targetPkg
-          ? command
-          : [monorepo.packageManager, "--silent", "run", "build"],
-      );
+      await buildCached(monorepo, pkg, [
+        monorepo.packageManager,
+        "--silent",
+        "run",
+        "build",
+      ]);
     }
 
+    // Always run the command after -- ie: "buildc -- unbuild"
     if (depsOnly) {
-      // When using --deps-only, the command after -- needs to be ran manually,
-      // since it was excluded above
+      // When using --deps-only, we don't cache the command's output
       consola.info(`${targetPkg.name}: \`${command.join(" ")}\``);
       execCommand(targetPkg.dir, command);
+    } else {
+      // When NOT using --deps-only, we run and cache the command's output
+      buildCached(monorepo, targetPkg, command);
     }
   });
 }
@@ -81,7 +83,7 @@ export async function buildAllPackages(): Promise<void> {
   const graph = buildMonorepoGraph(monorepo);
   consola.debug("Dependency Graph:\n" + getGraphString(graph));
 
-  let toBuild = graph.overallOrder();
+  let toBuild = getOverallBuildOrder(graph);
   consola.debug("Build order:", toBuild);
 
   for (const _pkgName of toBuild) {
@@ -115,6 +117,7 @@ async function buildCached(
       } catch (err) {
         consola.debug(
           "Failed to copy cache, command probably didn't create an output.",
+          err,
         );
       }
       consola.success(`${pkg.name}`);
