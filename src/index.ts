@@ -47,7 +47,7 @@ export async function buildPackage(
   consola.debug("Dependency Graph:\n" + getGraphString(graph));
 
   const toBuild = getPackageDependenciesBuildOrder(graph, targetPkg.name);
-  consola.debug("Build order:", toBuild);
+  consola.debug("Dependency build order:", toBuild);
 
   const packages = toBuild.map((pkgName) => graph.getNodeData(pkgName));
 
