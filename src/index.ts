@@ -117,6 +117,7 @@ async function buildCached(
       } catch (err) {
         consola.debug(
           "Failed to copy cache, command probably didn't create an output.",
+          err,
         );
       }
       consola.success(`${pkg.name}`);
