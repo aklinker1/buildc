@@ -102,6 +102,10 @@ async function buildCached(
   pkg: Package,
   command: string[],
 ): Promise<void> {
+  if (!pkg.hasBuildScript) {
+    consola.success(`${pkg.name}: Nothing to build`);
+  }
+
   try {
     consola.start(`${pkg.name}: \`${command.join(" ")}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);

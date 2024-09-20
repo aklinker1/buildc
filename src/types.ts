@@ -10,6 +10,7 @@ export interface Package {
   dir: string;
   options: BuildcOptions;
   dependencies: string[];
+  hasBuildScript: boolean;
 }
 
 export interface BuildcOptions {
