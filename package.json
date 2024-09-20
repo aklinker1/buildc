@@ -30,10 +30,8 @@
     "prettier": "^3.3.2",
     "publint": "^0.2.8",
     "simple-git-hooks": "^2.11.1",
+    "typescript": "^5.0.0",
     "unbuild": "^2.0.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   },
   "repository": {
     "type": "git",
