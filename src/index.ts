@@ -104,6 +104,7 @@ async function buildCached(
 ): Promise<void> {
   if (!pkg.hasBuildScript) {
     consola.success(`${pkg.name}: Nothing to build`);
+    return;
   }
 
   try {
