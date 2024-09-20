@@ -89,7 +89,7 @@ async function readPackage(dir: string): Promise<Package | undefined> {
       ...pkgJson.buildc,
       outDir: resolve(dir, pkgJson.buildc?.outDir ?? "dist"),
     },
-    hasBuildScript: !!pkgJson.scripts?.build != null,
+    hasBuildScript: pkgJson.scripts?.build != null,
   };
 }
 
