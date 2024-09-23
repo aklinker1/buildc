@@ -23,7 +23,7 @@ pub fn main() !void {
     if (arrayIncludesEither(buildc_args, "-h", "--help")) return printHelp();
 
     const ctx = Ctx{
-        .allocator = allocator,
+        .alloc = allocator,
         .is_debug = try isDebug(allocator),
         .cmd_args = cmd_args,
         .buildc_args = buildc_args,
@@ -31,10 +31,14 @@ pub fn main() !void {
 
     // zig fmt: off
     return (
-        if (buildc_args.len == 1 and arrayIncludes(buildc_args, "graph")) commands.graph(ctx)
-        else if (buildc_args.len == 1 and arrayIncludes(buildc_args, "all")) commands.all(ctx)
-        else if (buildc_args.len == 1 and arrayIncludes(buildc_args, "deps") and cmd_args.len > 0) commands.deps(ctx)
-        else if (buildc_args.len == 0 and cmd_args.len > 0) commands.build(ctx)
+        if      (buildc_args.len == 0 and cmd_args.len == 0)               printHelp()
+        else if (buildc_args.len == 0 and cmd_args.len > 0)                commands.build(ctx)
+        else if (mem.eql(u8, buildc_args[0], "graph"))                     commands.graph(ctx)
+        else if (mem.eql(u8, buildc_args[0], "all"))                       commands.all(ctx)
+        else if (mem.eql(u8, buildc_args[0], "clean"))                     commands.clean(ctx)
+        else if (mem.eql(u8, buildc_args[0], "clear"))                     commands.clean(ctx)
+        else if (mem.eql(u8, buildc_args[0], "deps") and cmd_args.len > 0) commands.deps(ctx)
+
         else std.debug.print("Unknown command. Run {s}buildc --help{s} for more details.\n", .{c.cyan, c.reset})
     ) catch |err| {
         // zig fmt: on
@@ -46,7 +50,7 @@ pub fn main() !void {
 fn printHelp() void {
     std.debug.print("{s}{s}Buildc{s} orchestrates and caches builds for JS monorepos. {s}({}){s}\n", .{ c.bold, c.blue, c.reset, c.dim, config.version, c.reset });
     std.debug.print("\n", .{});
-    std.debug.print("{s}Usage: buildc <command> {s}[...flags]{s} {s}-- [...args]{s}\n", .{ c.bold, c.cyan, c.reset, c.dim, c.reset });
+    std.debug.print("{s}Usage: buildc <command> {s}[-- ...args]{s}\n", .{ c.bold, c.dim, c.reset });
     std.debug.print("\n", .{});
     std.debug.print("{s}Commands:{s}\n", .{ c.bold, c.reset });
     std.debug.print("  {s}{s}     {s}    {s}-- unbuild{s}       Build dependencies and run the command, caching the result\n", .{ c.bold, c.blue, c.reset, c.dim, c.reset });
@@ -54,6 +58,8 @@ fn printHelp() void {
     std.debug.print("  {s}{s}all  {s}    {s}          {s}       Build all packages in the monorepo, caching the results\n", .{ c.bold, c.blue, c.reset, c.dim, c.reset });
     std.debug.print("\n", .{});
     std.debug.print("  {s}{s}graph{s}    {s}          {s}       Print the dependency graph\n", .{ c.bold, c.green, c.reset, c.dim, c.reset });
+    std.debug.print("\n", .{});
+    std.debug.print("  {s}{s}clean{s}    {s}          {s}       Delete build cache {s}(buildc clear){s}\n", .{ c.bold, c.yellow, c.reset, c.dim, c.reset, c.dim, c.reset });
     std.debug.print("\n", .{});
     std.debug.print("{s}Examples:{s}\n", .{ c.bold, c.reset });
     std.debug.print("\n", .{});

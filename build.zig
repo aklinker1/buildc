@@ -48,7 +48,7 @@ pub fn build(b: *std.Build) !void {
     // Tests
 
     const exe_unit_tests = b.addTest(.{
-        .root_source_file = b.path("src/buildc.zig"),
+        .root_source_file = b.path("src/tree.zig"),
         .target = target,
         .optimize = optimize,
     });
