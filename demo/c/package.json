@@ -1,0 +1,7 @@
+{
+  "name": "c",
+  "scripts": {
+    "buildc": "../../zig-out/bin/buildc",
+    "build": "pnpm buildc -- mkdir dist && echo \"console.log('c')\" > dist/c.js"
+  }
+}

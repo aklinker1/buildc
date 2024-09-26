@@ -1,0 +1,13 @@
+{
+  "name": "a",
+  "scripts": {
+    "buildc": "../../zig-out/bin/buildc",
+    "build": "pnpm buildc -- mkdir dist && echo \"console.log('a')\" > dist/c.js"
+  },
+  "dependencies": {
+    "b": "workspace:*"
+  },
+  "devDependencies": {
+    "c": "workspace:*"
+  }
+}
