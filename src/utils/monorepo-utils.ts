@@ -98,7 +98,7 @@ export function buildMonorepoGraph(monorepo: Monorepo): DepGraph<Package> {
   monorepo.packages.forEach((pkg) => graph.addNode(pkg.name, pkg));
   monorepo.packages.forEach((pkg) =>
     Object.entries(pkg.dependencies).forEach(([dep, version]) => {
-      if (version === "workspace:*") graph.addDependency(pkg.name, dep);
+      if (version.startsWith("workspace:")) graph.addDependency(pkg.name, dep);
     }),
   );
   return graph;
