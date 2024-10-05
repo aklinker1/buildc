@@ -1,0 +1,9 @@
+{
+  "packageManager": "bun@1.1.27",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "buildc": "cargo run"
+  }
+}

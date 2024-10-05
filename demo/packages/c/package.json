@@ -1,0 +1,8 @@
+{
+  "name": "c",
+  "main": "dist/index.js",
+  "scripts": {
+    "buildc": "cargo run",
+    "build": "bun build index.ts --outdir dist"
+  }
+}

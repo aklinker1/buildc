@@ -1,0 +1,14 @@
+{
+  "name": "a",
+  "main": "dist/index.js",
+  "scripts": {
+    "buildc": "cargo run",
+    "build": "bun buildc -- bun build index.ts --outdir dist"
+  },
+  "dependencies": {
+    "b": "workspace:*"
+  },
+  "devDependencies": {
+    "c": "workspace:*"
+  }
+}
