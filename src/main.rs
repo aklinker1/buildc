@@ -1,5 +1,6 @@
 use std::env;
 use std::process;
+use std::process::exit;
 
 use colors::{BLUE, BOLD, CYAN, DIM, GREEN, RESET, YELLOW};
 use ctx::Ctx;
@@ -7,7 +8,9 @@ use ctx::Ctx;
 mod colors;
 mod commands;
 mod ctx;
+mod globby;
 mod graph;
+mod hash;
 mod monorepo;
 
 const VERSION: &str = "2.0.0-alpha1";
@@ -17,32 +20,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let separator = args.iter().position(|arg| arg == "--");
 
-    let (buildc_args, cmd_args): (&[String], &[String]) = match separator {
+    let (buildc_args_slice, cmd_args_slice): (&[String], &[String]) = match separator {
         Some(index) => (&args[1..index], &args[index + 1..]),
         None => (&args[1..], &[]),
     };
+    let buildc_args: Vec<&str> = buildc_args_slice.iter().map(|str| str.as_str()).collect();
+    let cmd_args: Vec<&str> = cmd_args_slice.iter().map(|str| str.as_str()).collect();
     if is_debug {
-        println!("{DIM}⚙ Buildc args:  {buildc_args:?}{RESET}");
-        println!("{DIM}⚙ Command args: {cmd_args:?}{RESET}");
+        println!("{DIM}[buildc] ⚙ Buildc args:  {buildc_args:?}{RESET}");
+        println!("{DIM}[buildc] ⚙ Command args: {cmd_args:?}{RESET}");
     }
 
-    if array_includes_either(buildc_args, "-v", "--version") {
+    if array_includes_either(&buildc_args, "-v", "--version") {
         return print_version();
     }
-    if array_includes_either(buildc_args, "-h", "--help") {
+    if array_includes_either(&buildc_args, "-h", "--help") {
         return print_help();
     }
 
     let ctx = Ctx {
         is_debug,
-        cmd_args,
-        buildc_args,
+        buildc_args: buildc_args.clone(),
+        cmd_args: cmd_args.clone(),
     };
 
     match (buildc_args.len(), cmd_args.len()) {
         (0, 0) => print_help(),
         (0, _) => commands::build(&ctx),
-        _ => match buildc_args[0].as_str() {
+        _ => match buildc_args[0] {
             "deps" => commands::deps(&ctx),
             "all" => commands::all(&ctx),
             "graph" => commands::graph(&ctx),
@@ -87,13 +92,13 @@ fn print_version() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn print_unknown_command() -> Result<(), Box<dyn std::error::Error>> {
+fn print_unknown_command() -> ! {
     println!("Unknown command. Run {CYAN}buildc --help{RESET} for more details.");
-    Ok(())
+    exit(1)
 }
 
-fn array_includes_either(arr: &[String], a: &str, b: &str) -> bool {
-    arr.iter().any(|item| item == a || item == b)
+fn array_includes_either(arr: &Vec<&str>, a: &str, b: &str) -> bool {
+    arr.iter().any(|item| *item == a || *item == b)
 }
 
 fn is_debug() -> bool {

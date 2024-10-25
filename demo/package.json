@@ -4,6 +4,6 @@
     "packages/*"
   ],
   "scripts": {
-    "buildc": "cargo run"
+    "buildc": "../target/debug/aklinker1_buildc"
   }
 }

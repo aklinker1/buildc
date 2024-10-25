@@ -7,6 +7,7 @@ name = "aklinker1_buildc"
 version = "0.1.0"
 dependencies = [
  "glob",
+ "md5",
  "serde_json",
  "serde_yaml",
 ]
@@ -44,6 +45,12 @@ name = "itoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
+
+[[package]]
+name = "md5"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "490cc448043f947bae3cbee9c203358d62dbee0db12107a74be5c30ccfd09771"
 
 [[package]]
 name = "memchr"

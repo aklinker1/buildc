@@ -1,14 +1,25 @@
-use glob::glob;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
 
+use crate::colors::{DIM, RESET};
+use crate::ctx::Ctx;
+use crate::globby::globby;
 use crate::graph::Graph;
-use crate::graph::Package;
+use crate::graph::{Package, PackageConfig};
 
 pub enum PackageManager {
     Pnpm,
     Bun,
+}
+
+impl PackageManager {
+    pub fn run_cmd(&self) -> Vec<&str> {
+        match self {
+            Self::Pnpm => vec!["pnpm", "--silent", "run"],
+            Self::Bun => vec!["bun", "--silent", "run"],
+        }
+    }
 }
 
 pub struct Monorepo {
@@ -30,24 +41,24 @@ impl Monorepo {
             .collect::<Vec<_>>();
 
         let mut packages: Vec<Package> = vec![];
-        for pattern in package_json_globs {
-            let matches =
-                glob(&pattern).expect(format!("Invalid glob pattern: {pattern}").as_str());
-            for m in matches {
-                let package = read_package_json(m.unwrap()).expect("Could not read package.json");
-                packages.push(package);
-            }
+        let matches = globby(&self.root, package_json_globs, vec![]);
+        for package_json in matches {
+            let package = read_package_json(package_json).expect("Could not read package.json");
+            packages.push(package);
         }
 
         Graph::new(packages)
     }
 }
 
-pub fn find() -> Option<Monorepo> {
+pub fn find(ctx: &Ctx) -> Option<Monorepo> {
     let mut current_dir = env::current_dir().ok()?;
 
     loop {
         if let Some((package_manager, package_globs)) = read_workspace(&current_dir) {
+            if ctx.is_debug {
+                println!("{DIM}[buildc] ⚙ Monorepo found at {current_dir:?}{RESET}");
+            }
             return Some(Monorepo {
                 root: current_dir.to_owned(),
                 package_globs,
@@ -60,6 +71,7 @@ pub fn find() -> Option<Monorepo> {
         }
     }
 
+    println!("{DIM}⚙ Not in monorepo{RESET}");
     None
 }
 
@@ -111,12 +123,9 @@ fn read_package_json(package_json_path: PathBuf) -> std::io::Result<Package> {
         .expect("package.json must have a valid \"name\"")
         .to_string();
 
-    let build_script = json["scripts"]["build"].as_str().map(|script| {
-        script
-            .strip_prefix("buildc --")
-            .unwrap_or(script)
-            .to_string()
-    });
+    let build_script = json["scripts"]["build"]
+        .as_str()
+        .map(|script| script.to_string());
 
     let mut dependency_names = Vec::new();
     if let Some(deps) = json["dependencies"].as_object() {
@@ -144,8 +153,10 @@ fn read_package_json(package_json_path: PathBuf) -> std::io::Result<Package> {
     }
 
     Ok(Package {
+        dir: package_json_path.parent().unwrap().into(),
         name,
         build_script,
         dependency_names,
+        config: PackageConfig::from(json["buildc"].to_owned()),
     })
 }

@@ -2,7 +2,7 @@
   "name": "c",
   "main": "dist/index.js",
   "scripts": {
-    "buildc": "cargo run",
+    "buildc": "../../../target/debug/aklinker1_buildc",
     "build": "bun build index.ts --outdir dist"
   }
 }

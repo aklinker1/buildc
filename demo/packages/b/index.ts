@@ -1,4 +1,4 @@
-import c from 'c';
+import { c } from 'c';
 
 export function b() {
   console.log("b() called");
