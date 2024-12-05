@@ -6,8 +6,12 @@ use std::path::PathBuf;
 use crate::globby::globby;
 use crate::graph::Package;
 
-pub fn hash_package(package: &Package) -> std::io::Result<String> {
-    let mut files = globby(&package.dir, package.config.include, package.config.exclude);
+pub fn hash_package(package: &Package) -> std::io::Result<(String, String)> {
+    let mut files = globby(
+        &package.dir,
+        package.config.include.clone(),
+        package.config.exclude.clone(),
+    );
     files.sort();
 
     let dir_hash = files
@@ -24,7 +28,8 @@ pub fn hash_package(package: &Package) -> std::io::Result<String> {
         .join("\n");
 
     let digest = md5::compute(&dir_hash);
-    Ok(format!("{:x}", digest))
+    let digest_str = format!("{:x}", digest);
+    Ok((digest_str, dir_hash))
 }
 
 fn hash_file(file: &PathBuf) -> std::io::Result<String> {

@@ -3,12 +3,15 @@
   "main": "dist/index.js",
   "scripts": {
     "buildc": "../../../target/debug/aklinker1_buildc",
-    "build": "../../../target/debug/aklinker1_buildc -- bun build index.ts --outdir dist"
+    "build": "../../../target/debug/aklinker1_buildc -- bun build index.ts --external b --external c --outdir dist"
   },
   "dependencies": {
     "b": "workspace:*"
   },
   "devDependencies": {
     "c": "workspace:*"
+  },
+  "buildc": {
+    "include": ["index.ts"]
   }
 }

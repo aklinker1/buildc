@@ -1,6 +1,6 @@
 import { c } from 'c';
 
 export function b() {
-  console.log("b() called");
+  console.log("b2() called");
   c();
 }

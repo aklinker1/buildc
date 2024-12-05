@@ -69,7 +69,7 @@ fn print_help() -> Result<(), Box<dyn std::error::Error>> {
     println!();
     println!("{BOLD}Commands:{RESET}");
     println!("  {BOLD}{BLUE  }     {RESET}    {DIM}-- unbuild{RESET}       Build dependencies and run the command, caching the result");
-    println!("  {BOLD}{BLUE  }deps {RESET}    {DIM}-- vitest {RESET}       Ensure dependencies are build before running the command");
+    println!("  {BOLD}{BLUE  }deps {RESET}    {DIM}&& vitest {RESET}       Ensure dependencies are build before running the command");
     println!("  {BOLD}{BLUE  }all  {RESET}    {DIM}          {RESET}       Build all packages in the monorepo, caching the results");
     println!();
     println!("  {BOLD}{GREEN }graph{RESET}    {DIM}          {RESET}       Print the dependency graph");
@@ -79,9 +79,9 @@ fn print_help() -> Result<(), Box<dyn std::error::Error>> {
     println!("{BOLD}Examples:{RESET}");
     println!();
     println!("  buildc -- unbuild              {DIM}Run unbuild after building dependencies{RESET}");
-    println!("  buildc -- tsup  --minify       {DIM}Run TSup with CLI flags{RESET}");
-    println!("  buildc deps -- jest            {DIM}Run tests after after dependencies are built{RESET}");
-    println!("  buildc deps -- tsc --noEmit    {DIM}Run type checks after dependencies are built{RESET}");
+    println!("  buildc -- tsup --minify        {DIM}Run TSup with CLI flags{RESET}");
+    println!("  buildc deps && jest            {DIM}Run tests after after dependencies are built{RESET}");
+    println!("  buildc deps && tsc --noEmit    {DIM}Run type checks after dependencies are built{RESET}");
     println!();
     println!("Learn more about Buildc:    {CYAN}https://github.com/aklinker1/buildc{RESET}");
     Ok(())

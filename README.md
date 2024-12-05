@@ -1,5 +1,9 @@
 ## Contributing
 
+### Assumptions
+
+1. Packages depending on each other are external, and are not bundled into the final output. If package A depends on package B, package A should not need rebuilt if package B is changed, because it should import package B, not bundle it into A's output.
+
 ### Manual Testing
 
 The `demo/` directory contains a Bun monorepo you can test your changes against. Before running any `bun` commands below, run `cargo build` to build the latest version of `buildc`
@@ -22,7 +26,7 @@ bun buildc graph
 cd packages
 bun buildc clean
 cd a
-bun buildc deps -- echo "TODO"
+bun buildc deps && echo "TODO"
 ```
 
 To enable debug logs, set the `DEBUG` environment variable to "buildc" before running the command:

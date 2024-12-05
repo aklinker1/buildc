@@ -16,6 +16,12 @@ pub struct Package {
     pub config: PackageConfig,
 }
 
+impl Package {
+    pub fn absolute_out_dir(self: &Self) -> PathBuf {
+        self.dir.join(self.config.out_dir.clone())
+    }
+}
+
 const DEFAULT_CACHED: bool = true;
 const DEFAULT_OUT_DIR: &str = "dist";
 const DEFAULT_INCLUDE: &[&str] = &["src/**/*"];
@@ -86,7 +92,7 @@ impl From<serde_json::Value> for PackageConfig {
 }
 
 #[derive(Debug, Clone)]
-struct Node {
+pub struct Node {
     id: String,
     package: Package,
     children: Vec<Rc<RefCell<Node>>>,
@@ -206,6 +212,7 @@ impl Graph {
         Graph { root, node_map }
     }
 
+    /// Return all packages in the graph in build order.
     pub fn get_overall_build_order(&self) -> Vec<Package> {
         self.root
             .borrow()
@@ -215,7 +222,8 @@ impl Graph {
             .collect()
     }
 
-    pub fn get_package_build_order(&self, package_name: &str) -> Option<Vec<Package>> {
+    /// Return a package's dependencies in build order.
+    pub fn get_package_dependencies_build_order(&self, package_name: &str) -> Option<Vec<Package>> {
         match self.node_map.get(package_name) {
             None => None,
             Some(node) => Some(
@@ -287,19 +295,19 @@ mod tests {
             vec!["c", "b", "a"]
         );
 
-        let a_order = graph.get_package_build_order("a").unwrap();
+        let a_order = graph.get_package_dependencies_build_order("a").unwrap();
         assert_eq!(
             a_order.iter().map(|p| p.name.clone()).collect::<Vec<_>>(),
             vec!["c", "b"]
         );
 
-        let b_order = graph.get_package_build_order("b").unwrap();
+        let b_order = graph.get_package_dependencies_build_order("b").unwrap();
         assert_eq!(
             b_order.iter().map(|p| p.name.clone()).collect::<Vec<_>>(),
             vec!["c"]
         );
 
-        let c_order = graph.get_package_build_order("c").unwrap();
+        let c_order = graph.get_package_dependencies_build_order("c").unwrap();
         assert_eq!(
             c_order.iter().map(|p| p.name.clone()).collect::<Vec<_>>(),
             Vec::<String>::new()

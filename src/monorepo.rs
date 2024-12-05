@@ -3,7 +3,6 @@ use std::fs;
 use std::path::PathBuf;
 
 use crate::colors::{DIM, RESET};
-use crate::ctx::Ctx;
 use crate::globby::globby;
 use crate::graph::Graph;
 use crate::graph::{Package, PackageConfig};
@@ -51,14 +50,11 @@ impl Monorepo {
     }
 }
 
-pub fn find(ctx: &Ctx) -> Option<Monorepo> {
+pub fn find() -> Option<Monorepo> {
     let mut current_dir = env::current_dir().ok()?;
 
     loop {
         if let Some((package_manager, package_globs)) = read_workspace(&current_dir) {
-            if ctx.is_debug {
-                println!("{DIM}[buildc] ⚙ Monorepo found at {current_dir:?}{RESET}");
-            }
             return Some(Monorepo {
                 root: current_dir.to_owned(),
                 package_globs,
