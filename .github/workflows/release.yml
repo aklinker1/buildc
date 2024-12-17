@@ -52,13 +52,13 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           mkdir dist
-          mv target/${{ matrix.target }}/release/buildc.exe dist/${{ matrix.artifact_name }}
+          mv target/${{ matrix.target }}/release/aklinker1_buildc.exe dist/${{ matrix.artifact_name }}
         shell: bash
       - name: Rename buildc (Unix)
         if: runner.os != 'Windows'
         run: |
           mkdir dist
-          mv target/${{ matrix.target }}/release/buildc dist/${{ matrix.artifact_name }}
+          mv target/${{ matrix.target }}/release/aklinker1_buildc dist/${{ matrix.artifact_name }}
       # Signing: TODO
       # Upload
       - name: Upload artifact
