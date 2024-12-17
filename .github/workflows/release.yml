@@ -1,6 +1,9 @@
 name: Release
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - release-workflow
 
 jobs:
   # draft-release:
@@ -56,6 +59,7 @@ jobs:
         run: |
           mkdir dist
           mv target/${{ matrix.target }}/release/buildc dist/${{ matrix.artifact_name }}
+      # Signing: TODO
       # Upload
       - name: Upload artifact
         uses: actions/upload-artifact@v4
