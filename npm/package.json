@@ -1,0 +1,28 @@
+{
+  "name": "@aklinker1/buildc",
+  "description": "Zero config CLI tool for caching and orchestrating builds in monorepos",
+  "version": "2.0.0-alpha1",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aklinker1/buildc"
+  },
+  "homepage": "https://github.com/aklinker1/buildc",
+  "keywords": [
+    "monorepo",
+    "build",
+    "cache"
+  ],
+  "author": {
+    "name": "Aaron Klinker",
+    "email": "aaronklinker1+github@gmail.com"
+  },
+  "license": "MIT",
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "bin": {
+    "buildc": "./index.mjs"
+  }
+}
