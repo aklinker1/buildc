@@ -1,5 +1,5 @@
 /target
 **/dist
 **/node_modules
-!**/node_modules/.bin/.keep
+!npm/node_modules/.bin/.keep
 .cache
