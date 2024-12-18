@@ -14,6 +14,7 @@ const downloadTo = path.join(binDir, "buildc");
 console.log("Downloading binary:", binUrl);
 console.log("To:", downloadTo);
 
+// TODO: Check SHA before redownloading the same binary.
 const res = await fetch(binUrl);
 if (!res.ok) {
   console.error(`Failed to download binary: ${res.status} ${res.statusText}`);
