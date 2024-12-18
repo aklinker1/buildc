@@ -1,3 +1,4 @@
+// To test, just run `cd npm && node postinstall.js`
 import pkg from "./package.json" with { type: "json" };
 import path from "node:path";
 import fs from "node:fs";
