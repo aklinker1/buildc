@@ -27,8 +27,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let buildc_args: Vec<&str> = buildc_args_slice.iter().map(|str| str.as_str()).collect();
     let cmd_args: Vec<&str> = cmd_args_slice.iter().map(|str| str.as_str()).collect();
     if is_debug {
-        println!("{DIM}[buildc] ⚙ Buildc args:  {buildc_args:?}{RESET}");
-        println!("{DIM}[buildc] ⚙ Command args: {cmd_args:?}{RESET}");
+        println!("{DIM}[buildc] → Buildc args:  {buildc_args:?}{RESET}");
+        println!("{DIM}[buildc] → Command args: {cmd_args:?}{RESET}");
     }
 
     if array_includes_either(&buildc_args, "-v", "--version") {

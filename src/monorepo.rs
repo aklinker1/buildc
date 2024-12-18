@@ -66,8 +66,6 @@ pub fn find() -> Option<Monorepo> {
             break;
         }
     }
-
-    println!("{DIM}⚙ Not in monorepo{RESET}");
     None
 }
 

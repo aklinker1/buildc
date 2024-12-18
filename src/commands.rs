@@ -17,7 +17,7 @@ pub fn build(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
         // in charge of building all dependencies and checking the cache.
         if ctx.is_debug {
             println!(
-                "{DIM}[buildc] ⚙ Ignoring buildc, running command immediately:  {:?}{RESET}",
+                "{DIM}[buildc] → Ignoring buildc, running command immediately:  {:?}{RESET}",
                 ctx.cmd_args
             );
         }
@@ -72,14 +72,14 @@ pub fn clean(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(monorepo) = monorepo::find() {
         let cache_dir = monorepo.cache_dir();
         if ctx.is_debug {
-            println!("{DIM}[buildc] ⚙ Deleting cache at {:?}{RESET}", cache_dir);
+            println!("{DIM}[buildc] → Deleting cache at {:?}{RESET}", cache_dir);
         }
 
         std::fs::remove_dir_all(monorepo.cache_dir())
             .unwrap_or_else(|err| println!("Failed to remove cache: {err}"))
     } else {
         if ctx.is_debug {
-            println!("{DIM}[buildc] ⚙ Not in monorepo{RESET}");
+            println!("{DIM}[buildc] → Not in monorepo{RESET}");
         }
     }
 
@@ -100,7 +100,7 @@ fn require_monorepo(ctx: &Ctx) -> Monorepo {
     let monorepo = monorepo.unwrap();
     if ctx.is_debug {
         println!(
-            "{DIM}[buildc] ⚙ Monorepo found at {:?}{RESET}",
+            "{DIM}[buildc] → Monorepo found at {:?}{RESET}",
             monorepo.root
         );
     }
@@ -117,7 +117,7 @@ fn require_active_package(ctx: &Ctx, graph: &Graph) -> Package {
     let active_package = active_package.unwrap();
     if ctx.is_debug {
         println!(
-            "{DIM}[buildc] ⚙ Active package {:?}{RESET}",
+            "{DIM}[buildc] → Active package {:?}{RESET}",
             active_package.dir
         );
     }
@@ -129,7 +129,7 @@ fn require_active_package(ctx: &Ctx, graph: &Graph) -> Package {
 fn build_cached_packages(ctx: &Ctx, monorepo: &Monorepo, packages: Vec<Package>) {
     if ctx.is_debug {
         println!(
-            "{DIM}[buildc] ⚙ Packages to build: {:?}{RESET}",
+            "{DIM}[buildc] → Packages to build: {:?}{RESET}",
             packages
                 .iter()
                 .map(|package| &package.name)
@@ -159,7 +159,7 @@ fn build_cached_package(ctx: &Ctx, monorepo: &Monorepo, package: Package) {
     args.push("build");
     if ctx.is_debug {
         println!(
-            "{DIM}[buildc] ⚙ Running {args:?} in {:?}{RESET}",
+            "{DIM}[buildc] → Running {args:?} in {:?}{RESET}",
             package.dir.strip_prefix(monorepo.root.clone()).unwrap()
         );
     }
@@ -173,7 +173,7 @@ fn build_cached_package(ctx: &Ctx, monorepo: &Monorepo, package: Package) {
 
     let cache_dir = get_package_cache_dir(ctx, monorepo, &package);
     if ctx.is_debug {
-        println!("{DIM}[buildc] ⚙ Cache dir: {:?}{RESET}", cache_dir);
+        println!("{DIM}[buildc] → Cache dir: {:?}{RESET}", cache_dir);
     }
 
     if cache_dir.exists() {
@@ -197,8 +197,8 @@ fn get_package_cache_dir(ctx: &Ctx, monorepo: &Monorepo, package: &Package) -> P
         exit(1)
     });
     if ctx.is_debug {
-        println!("{DIM}[buildc] ⚙ File hashes:\n{file_hashes:?}{RESET}");
-        println!("{DIM}[buildc] ⚙ Package hash: {package_hash:?}{RESET}");
+        println!("{DIM}[buildc] → File hashes:\n{file_hashes:?}{RESET}");
+        println!("{DIM}[buildc] → Package hash: {package_hash:?}{RESET}");
     }
 
     monorepo
@@ -211,7 +211,7 @@ fn get_package_cache_dir(ctx: &Ctx, monorepo: &Monorepo, package: &Package) -> P
 fn restore_package_cache(ctx: &Ctx, package: &Package, cache_dir: PathBuf) {
     let out_dir = package.absolute_out_dir();
     if ctx.is_debug {
-        println!("{DIM}[buildc] ⚙ Restoring {cache_dir:?} to {out_dir:?}");
+        println!("{DIM}[buildc] → Restoring {cache_dir:?} to {out_dir:?}");
     }
     std::fs::create_dir_all(&out_dir).unwrap();
     let mut copy_options = fs_extra::dir::CopyOptions::default();
@@ -227,7 +227,7 @@ fn restore_package_cache(ctx: &Ctx, package: &Package, cache_dir: PathBuf) {
 fn cache_package_output(ctx: &Ctx, package: &Package, cache_dir: PathBuf) {
     let out_dir = package.absolute_out_dir();
     if ctx.is_debug {
-        println!("{DIM}[buildc] ⚙ Caching {out_dir:?} to {cache_dir:?}");
+        println!("{DIM}[buildc] → Caching {out_dir:?} to {cache_dir:?}");
     }
 
     if !out_dir.exists() {
