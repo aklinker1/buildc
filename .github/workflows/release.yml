@@ -44,7 +44,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
       # Build
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
@@ -79,6 +79,8 @@ jobs:
   #       uses: actions/download-artifact@v4
   #       with:
   #         path: artifacts
+  #     - run: find . -type f -exec sha256sum {} \; > ../SHA256SUMS
+  #       working_directory: artifacts
   #
   #     - name: Create Release
   #       env:
@@ -92,5 +94,5 @@ jobs:
   #         gh release create "${GITHUB_REF#refs/tags/}" \
   #           --title "${GITHUB_REF#refs/tags/}" \
   #           --notes-file release_notes.md \
-  #           artifacts/*/* \
+  #           artifacts/** \
   #           --generate-notes
