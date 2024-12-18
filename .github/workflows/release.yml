@@ -19,7 +19,7 @@ jobs:
             os: ubuntu-latest
             artifact_name: buildc-windows-x64.exe
           # Windows arm64
-          - target: aarch64-pc-windows-msvc
+          - target: aarch64-pc-windows-gnu
             os: ubuntu-latest
             artifact_name: buildc-windows-arm64.exe
           # MacOS x86_64
