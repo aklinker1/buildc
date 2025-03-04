@@ -5,7 +5,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aklinker1/buildc"
+    "url": "git+https://github.com/aklinker1/buildc.git"
   },
   "homepage": "https://github.com/aklinker1/buildc",
   "keywords": [
@@ -23,7 +23,7 @@
     "dist"
   ],
   "bin": {
-    "buildc": "./buildc"
+    "buildc": "buildc"
   },
   "scripts": {
     "postinstall": "./postinstall.mjs"
