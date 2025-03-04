@@ -16,6 +16,7 @@ pub fn hash_package(package: &Package) -> std::io::Result<(String, String)> {
 
     let dir_hash = files
         .iter()
+        .filter(|file| file.is_file())
         .map(|file| {
             let hash = hash_file(file).expect("Failed to hash file");
             let relative_path = file
