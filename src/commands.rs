@@ -176,15 +176,19 @@ fn build_cached_package(ctx: &Ctx, monorepo: &Monorepo, package: Package) {
         println!("{DIM}[buildc] → Cache dir: {:?}{RESET}", cache_dir);
     }
 
-    if cache_dir.exists() {
+    if cache_dir.exists() && package.config.cache {
         restore_package_cache(ctx, &package, cache_dir);
         println!("{GREEN}[buildc] ✓{RESET} {}: Cached!", package.name);
         return;
-    } else {
-        exec_in_dir(&package.dir, args);
-        cache_package_output(ctx, &package, cache_dir);
-        println!("{GREEN}[buildc] ✓{RESET} {}: Built", package.name);
     }
+
+    exec_in_dir(&package.dir, args);
+
+    if package.config.cache {
+        cache_package_output(ctx, &package, cache_dir);
+    }
+
+    println!("{GREEN}[buildc] ✓{RESET} {}: Built", package.name);
 }
 
 /// Return the path to a package's cache based on it's current hash.
