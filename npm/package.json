@@ -23,6 +23,6 @@
     "dist"
   ],
   "bin": {
-    "buildc": "./index.mjs"
+    "buildc": "./buildc"
   }
 }

@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "Buildc postinstall step not performed."
+echo "The postinstall replaces this placeholder script with a native binary for your operating system, making buildc lightning fast. If you see this message, it means you didn't run the postinstall step, or your package manager blocked running it."
