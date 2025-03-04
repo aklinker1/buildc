@@ -2,7 +2,6 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 
-use crate::colors::{DIM, RESET};
 use crate::globby::globby;
 use crate::graph::Graph;
 use crate::graph::{Package, PackageConfig};

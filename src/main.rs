@@ -40,7 +40,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let ctx = Ctx {
         is_debug,
-        buildc_args: buildc_args.clone(),
         cmd_args: cmd_args.clone(),
     };
 
