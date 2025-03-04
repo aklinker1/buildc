@@ -5,14 +5,14 @@ import pkg from "./package.json" with { type: "json" };
 import path from "node:path";
 import fs from "node:fs";
 
-console.log("process.env.INIT_CWD:", process.env.INIT_CWD);
-
 const os = process.platform === "win32" ? "windows" : process.platform;
 const arch = process.arch === "arm64" ? "arm64" : "x64";
 const { version } = pkg;
 const binUrl = `https://github.com/aklinker1/buildc/releases/download/v${version}/buildc-${os}-${arch}`;
 
-const downloadTo = path.join(import.meta.env.dir, "buildc");
+const dirname =
+  typeof __dirname !== "undefined" ? __dirname : import.meta.dirname;
+const downloadTo = path.join(dirname, "buildc");
 
 console.log("Downloading binary:", binUrl);
 console.log("To:", downloadTo);
