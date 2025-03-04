@@ -30,6 +30,7 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-22
             artifact_name: buildc-linux-x64
+            cross: true
           # Linux arm64
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-22
