@@ -201,8 +201,8 @@ fn get_package_cache_dir(ctx: &Ctx, monorepo: &Monorepo, package: &Package) -> P
         exit(1)
     });
     if ctx.is_debug {
-        println!("{DIM}[buildc] → File hashes:\n{file_hashes:?}{RESET}");
-        println!("{DIM}[buildc] → Package hash: {package_hash:?}{RESET}");
+        println!("{DIM}[buildc] → File hashes:\n{file_hashes}{RESET}");
+        println!("{DIM}[buildc] → Package hash: {package_hash}{RESET}");
     }
 
     monorepo
