@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::{cell::RefCell, collections::HashMap};
 
-use crate::colors::{CYAN, RESET};
+use crate::colors::{BOLD, CYAN, DIM, RESET};
 
 #[derive(Debug, Clone)]
 pub struct Package {
@@ -139,18 +139,27 @@ impl Node {
         result.push(Rc::clone(node));
     }
 
-    pub fn print<W: Write>(&self, writer: &mut W, depth: usize) -> std::io::Result<()> {
+    pub fn print<W: Write>(
+        &self,
+        writer: &mut W,
+        depth: usize,
+        is_last: bool,
+    ) -> std::io::Result<()> {
         write!(
             writer,
-            "{}- {}{}{}\n",
-            "  ".repeat(depth),
-            CYAN,
+            "{DIM}{}{}{RESET} {CYAN}{BOLD}{}{RESET}\n",
+            "│ ".repeat(depth),
+            if is_last { "└" } else { "├" },
             self.id,
-            RESET
         )?;
 
-        for child in &self.children {
-            child.borrow().print(writer, depth + 1)?;
+        if self.children.len() > 0 {
+            let last_index = self.children.len() - 1;
+            for (index, child) in self.children.iter().enumerate() {
+                child
+                    .borrow()
+                    .print(writer, depth + 1, index == last_index)?;
+            }
         }
         Ok(())
     }
@@ -253,8 +262,11 @@ impl Graph {
     pub fn print(&self) -> std::io::Result<()> {
         println!("Dependency Graph:");
         let mut stdout = std::io::stdout().lock();
-        for package_node in self.root.borrow().children.clone() {
-            package_node.borrow().print(&mut stdout, 0)?;
+        let last_index = self.root.borrow().children.len() - 1;
+        for (index, package_node) in self.root.borrow().children.clone().iter().enumerate() {
+            package_node
+                .borrow()
+                .print(&mut stdout, 0, index == last_index)?;
         }
         Ok(())
     }
