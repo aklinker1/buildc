@@ -1,3 +1,14 @@
+## TODO
+
+- [x] `buildc --help`
+- [x] `buildc graph`
+- [x] `buildc clean`
+- [x] `buildc all`
+- [x] `buildc -- <command>`
+- [x] `buildc deps && <command>`
+- [ ] Release workflow
+- [ ] Sign macos binary
+
 ## Contributing
 
 ### Assumptions
