@@ -19,8 +19,8 @@
   },
   "license": "MIT",
   "files": [
-    "bin",
-    "dist"
+    "buildc",
+    "postinstall.mjs"
   ],
   "bin": {
     "buildc": "buildc"
