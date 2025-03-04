@@ -12,8 +12,7 @@ const arch = process.arch === "arm64" ? "arm64" : "x64";
 const { version } = pkg;
 const binUrl = `https://github.com/aklinker1/buildc/releases/download/v${version}/buildc-${os}-${arch}`;
 
-const binDir = findNodeModulesBin();
-const downloadTo = path.join(binDir, "buildc");
+const downloadTo = path.join(import.meta.env.dir, "buildc");
 
 console.log("Downloading binary:", binUrl);
 console.log("To:", downloadTo);
@@ -33,18 +32,6 @@ console.log("Done!");
 ///
 /// HELPERS
 ///
-
-function findNodeModulesBin() {
-  let currentDir = process.env.INIT_CWD || process.cwd();
-  while (currentDir !== path.parse(currentDir).root) {
-    const binPath = path.join(currentDir, "node_modules", ".bin");
-    if (fs.existsSync(binPath)) {
-      return binPath;
-    }
-    currentDir = path.dirname(currentDir);
-  }
-  return null;
-}
 
 function toBuffer(arrayBuffer) {
   const buffer = Buffer.alloc(arrayBuffer.byteLength);
