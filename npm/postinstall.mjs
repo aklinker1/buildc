@@ -10,9 +10,7 @@ const arch = process.arch === "arm64" ? "arm64" : "x64";
 const { version } = pkg;
 const binUrl = `https://github.com/aklinker1/buildc/releases/download/v${version}/buildc-${os}-${arch}`;
 
-const dirname =
-  typeof __dirname !== "undefined" ? __dirname : import.meta.dirname;
-const downloadTo = path.join(dirname, "buildc");
+const downloadTo = path.resolve("buildc");
 
 console.log("Downloading binary:", binUrl);
 console.log("To:", downloadTo);
