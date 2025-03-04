@@ -24,5 +24,8 @@
   ],
   "bin": {
     "buildc": "./buildc"
+  },
+  "scripts": {
+    "postinstall": "./postinstall.mjs"
   }
 }

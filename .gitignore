@@ -1,5 +1,4 @@
 /target
 **/dist
 **/node_modules
-!npm/node_modules/.bin/.keep
 .cache
