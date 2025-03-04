@@ -26,6 +26,6 @@
     "buildc": "buildc"
   },
   "scripts": {
-    "postinstall": "./postinstall.mjs"
+    "postinstall": "node postinstall.mjs"
   }
 }

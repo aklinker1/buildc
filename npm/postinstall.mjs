@@ -5,6 +5,8 @@ import pkg from "./package.json" with { type: "json" };
 import path from "node:path";
 import fs from "node:fs";
 
+console.log("process.env.INIT_CWD:", process.env.INIT_CWD);
+
 const os = process.platform === "win32" ? "windows" : process.platform;
 const arch = process.arch === "arm64" ? "arm64" : "x64";
 const { version } = pkg;
@@ -33,7 +35,7 @@ console.log("Done!");
 ///
 
 function findNodeModulesBin() {
-  let currentDir = process.cwd();
+  let currentDir = process.env.INIT_CWD || process.cwd();
   while (currentDir !== path.parse(currentDir).root) {
     const binPath = path.join(currentDir, "node_modules", ".bin");
     if (fs.existsSync(binPath)) {
