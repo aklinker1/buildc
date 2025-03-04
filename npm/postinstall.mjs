@@ -6,9 +6,10 @@ import path from "node:path";
 import fs from "node:fs";
 
 const os = process.platform === "win32" ? "windows" : process.platform;
+const ext = os === "windows" ? ".exe" : "";
 const arch = process.arch === "arm64" ? "arm64" : "x64";
 const { version } = pkg;
-const binUrl = `https://github.com/aklinker1/buildc/releases/download/v${version}/buildc-${os}-${arch}`;
+const binUrl = `https://github.com/aklinker1/buildc/releases/download/v${version}/buildc-${os}-${arch}${ext}`;
 
 const downloadTo = path.resolve("buildc");
 

@@ -28,11 +28,12 @@ jobs:
             artifact_name: buildc-macos-arm64
           # Linux x86_64
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-22
+            os: ubuntu-latest
             artifact_name: buildc-linux-x64
+            cross: true
           # Linux arm64
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-22
+            os: ubuntu-latest
             artifact_name: buildc-linux-arm64
             cross: true # ARM builds are failing at the linker step, but works when using cross!
     steps:
