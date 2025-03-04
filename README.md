@@ -16,6 +16,7 @@
       ./node_modules/.bin/buildc all  0.30s user 0.05s system 103% cpu 0.340 total
       ```
 - [ ] Release workflow
+- [ ] NPM package works
 - [ ] Sign macos binary
 
 ## Contributing
