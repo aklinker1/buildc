@@ -6,6 +6,9 @@
 - [x] `buildc all`
 - [x] `buildc -- <command>`
 - [x] `buildc deps && <command>`
+- [x] Test binary in WXT
+   - v1 `buildc all` ran in 4.51-2.146 = 2.35s
+   - v2 `buildc all` ran in 4.30-2.160 = 2.14s
 - [ ] Release workflow
 - [ ] Sign macos binary
 

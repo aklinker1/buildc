@@ -41,6 +41,13 @@ pub fn build(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub fn deps(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
+    if env::var("INSIDE_BUILDC").unwrap_or_default() == "true" {
+        // When building dependencies inside another buildc command, the parent
+        // will already have build the dependencies. So in this case, we return
+        // immediately since theres nothing to build.
+        return Ok(());
+    }
+
     let monorepo = require_monorepo(ctx);
     let graph = monorepo.to_graph();
     let active_package = require_active_package(ctx, &graph);
