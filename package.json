@@ -1,7 +1,7 @@
 {
   "name": "@aklinker1/buildc",
   "description": "Zero config CLI tool for caching and orchestrating builds in monorepos",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "type": "module",
   "scripts": {
     "buildc": "bun src/cli.ts",
