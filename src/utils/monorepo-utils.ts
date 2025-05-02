@@ -50,8 +50,10 @@ async function findWorkspaceRoot(
   if (await fs.exists(pkgJson)) {
     const { workspaces } = JSON.parse(await fs.readFile(pkgJson, "utf-8"));
     if (workspaces != null) {
-      const bunLockfile = join(currentDir, "bun.lockb");
-      if (await fs.exists(bunLockfile))
+      if (
+        (await fs.exists(join(currentDir, "bun.lock"))) ||
+        (await fs.exists(join(currentDir, "bun.lockb")))
+      )
         return {
           packageManager: "bun",
           rootDir: currentDir,
