@@ -144,6 +144,7 @@ fn build_cached_packages(ctx: &Ctx, monorepo: &Monorepo, packages: Vec<Package>)
         );
     }
 
+    // TODO: Add lockfile around this loop to prevent multiple processes from running multiple builds at the same time
     for package in packages {
         build_cached_package(ctx, monorepo, package);
     }
