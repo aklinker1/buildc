@@ -77,6 +77,14 @@ async function readPackage(dir: string): Promise<Package | undefined> {
   if (pkgJsonText == null) return;
 
   const pkgJson = JSON.parse(pkgJsonText);
+  const buildcOptions = pkgJson.buildc;
+
+  // Support both cacheable and cachable for backwards compatibility
+  if (buildcOptions?.cachable != null) {
+    buildcOptions.cacheable ??= buildcOptions.cachable;
+    delete buildcOptions.cachable;
+  }
+
   return {
     dir,
     name: pkgJson.name,
@@ -85,11 +93,11 @@ async function readPackage(dir: string): Promise<Package | undefined> {
       ...pkgJson.devDependencies,
     },
     options: {
-      cachable: true,
+      cacheable: true,
       include: ["src/**/*", "package.json"],
       exclude: ["**/__tests__/**", "**/*.test.*", "**/e2e/**"],
-      ...pkgJson.buildc,
-      outDir: resolve(dir, pkgJson.buildc?.outDir ?? "dist"),
+      ...buildcOptions,
+      outDir: resolve(dir, buildcOptions?.outDir ?? "dist"),
     },
     hasBuildScript: pkgJson.scripts?.build != null,
   };

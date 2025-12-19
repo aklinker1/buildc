@@ -14,7 +14,7 @@ export interface Package {
 }
 
 export interface BuildcOptions {
-  cachable: boolean;
+  cacheable: boolean;
   outDir: string;
   include: string[];
   exclude: string[];

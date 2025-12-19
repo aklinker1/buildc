@@ -110,7 +110,7 @@ async function buildCached(
   try {
     consola.start(`${pkg.name}: \`${command.join(" ")}\``);
     const cacheDir = await getCacheDir(monorepo, pkg);
-    if (pkg.options.cachable === true && (await fs.exists(cacheDir))) {
+    if (pkg.options.cacheable === true && (await fs.exists(cacheDir))) {
       await fs.ensureDir(pkg.options.outDir);
       await fs.copy(cacheDir, pkg.options.outDir);
       consola.success(`${pkg.name}: Cached!`);
