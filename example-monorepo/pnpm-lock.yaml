@@ -6,6 +6,8 @@ settings:
 
 importers:
 
+  .: {}
+
   packages/a:
     dependencies:
       b:
