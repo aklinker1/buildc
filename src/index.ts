@@ -52,7 +52,7 @@ export async function buildPackage(
   const packages = toBuild.map((pkgName) => graph.getNodeData(pkgName));
 
   // Use a lockfile to prevent running multiple builds in parallel. PNPM for
-  // example, tries to orchastrate builds in parrallel during post-install,
+  // example, tries to orchastrate builds in parallel during post-install,
   // which can cause problems like files not existing when different processes
   // delete directories.
   await withLock(monorepo.cacheDir, async () => {
@@ -145,7 +145,7 @@ async function getCacheDir(monorepo: Monorepo, pkg: Package): Promise<string> {
 }
 
 function execCommand(cwd: string, command: string[]) {
-  const { error, status } = spawnSync(command[0], command.slice(1), {
+  const { error, status } = spawnSync(command.join(" "), {
     stdio: "inherit",
     cwd,
     env: {
