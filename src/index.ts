@@ -1,16 +1,16 @@
-import { buildMonorepoGraph, readMonorepo } from "./utils/monorepo-utils";
-import { getGraphString } from "./utils/log-utils";
 import consola from "consola";
-import { spawnSync } from "node:child_process";
 import fs from "fs-extra";
+import { spawnSync } from "node:child_process";
+import { relative, resolve } from "pathe";
 import type { Monorepo, Package } from "./types";
 import { hashDir } from "./utils/cache-utils";
-import { relative, resolve } from "pathe";
-import { withLock } from "./utils/lock-utils";
 import {
-  getPackageDependenciesBuildOrder,
   getOverallBuildOrder,
+  getPackageDependenciesBuildOrder,
 } from "./utils/graph-utils";
+import { withLock } from "./utils/lock-utils";
+import { getGraphString } from "./utils/log-utils";
+import { buildMonorepoGraph, readMonorepo } from "./utils/monorepo-utils";
 
 export type { BuildcOptions } from "./types";
 
@@ -155,5 +155,5 @@ function execCommand(cwd: string, command: string[]) {
     shell: true,
   });
   if (error) throw error;
-  if (status !== 0) throw Error("Commaned exited with code " + status);
+  if (status !== 0) process.exit(status);
 }
