@@ -1,0 +1,10 @@
+name: Build Native Binaries
+description: Cross-compile all binaries.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run bun build:all
+      shell: bash
+      working-directory: npm
+      run: bun build:all

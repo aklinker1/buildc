@@ -1,0 +1,19 @@
+name: Setup
+description: Install tools and dependencies
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Bun
+      uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      with:
+        bun-version-file: npm/package.json
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        pushd npm
+          bun install --frozen-lockfile
+        popd
+        pushd demo
+          bun install --frozen-lockfile
+        popd

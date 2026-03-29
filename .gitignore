@@ -1,4 +1,15 @@
+# Cargo
+#
 /target
+.cache
+.intentionally-empty-file.o
+
+# NPM
+#
 **/dist
 **/node_modules
-.cache
+
+# Misc.
+#
+.DS_Store
+*.log
