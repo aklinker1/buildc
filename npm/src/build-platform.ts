@@ -47,7 +47,6 @@ export async function buildPlatform(platform: Platform): Promise<void> {
   const zigBuildDockerImage = "ghcr.io/rust-cross/cargo-zigbuild";
   const xwinDockerImage = "messense/cargo-xwin";
 
-  console.log(styleText("cyan", `\nBuilding ${name} binary`));
   if (name.startsWith("win32")) {
     if (!hasPulledCargoXwin) {
       console.log(styleText("cyan", "\nPulling docker image"));
@@ -55,6 +54,7 @@ export async function buildPlatform(platform: Platform): Promise<void> {
       hasPulledCargoXwin = true;
     }
 
+    console.log(styleText("cyan", `\nBuilding ${name} executable`));
     await Bun.$`
       docker run --rm -it -v $(pwd)/..:/io -w /io ${xwinDockerImage} \
         cargo xwin build --release --target ${target}
@@ -66,6 +66,7 @@ export async function buildPlatform(platform: Platform): Promise<void> {
       hasPulledCargoZigBuild = true;
     }
 
+    console.log(styleText("cyan", `\nBuilding ${name} binary`));
     await Bun.$`
       docker run --rm -it -v $(pwd)/..:/io -w /io ${zigBuildDockerImage} \
         cargo zigbuild --release --target ${target}
