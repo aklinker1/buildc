@@ -20,7 +20,6 @@ jobs:
         with:
           name: binaries
           path: npm/dist/artifacts/*
-          archive: false
           if-no-files-found: error
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # 7.0.0

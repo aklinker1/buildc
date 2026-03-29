@@ -30,7 +30,11 @@ export function getPlatformBinName(platform: Platform): string {
 }
 
 export function findCurrentPlatform(): Platform[] {
-  return platforms.filter((p) =>
-    p.name.startsWith(`${process.platform}-${process.arch}`),
-  );
+  const os =
+    process.platform === "win32"
+      ? "win32"
+      : process.platform === "darwin"
+        ? "darwin"
+        : "linux";
+  return platforms.filter((p) => p.name.startsWith(`${os}-${process.arch}`));
 }
