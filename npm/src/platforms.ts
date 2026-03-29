@@ -57,7 +57,7 @@ export const platforms: Platform[] = [
   {
     name: "win32-x64",
     runner: windowsRunner,
-    target: "x86_64-pc-windows-gnu",
+    target: "x86_64-pc-windows-msvc",
   },
   {
     name: "win32-arm64",

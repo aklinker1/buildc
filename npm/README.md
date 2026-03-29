@@ -10,7 +10,7 @@ bun install
 
 We use [`cargo-zigbuild`](https://github.com/rust-cross/cargo-zigbuild) to build Mac/Linux and [`cargo-xwin`](https://github.com/rust-cross/cargo-xwin) to build for Windows.
 
-I've tried to create the scripts in a way that will run on all operating systems. Howveer, for production builds they all are ran from inside a MacOS GitHub Actions runner.
+I've tried to create the scripts in a way that will run on all operating systems. However, the docker images take up ~10GB of space...
 
 You can build all targets by running the following:
 
