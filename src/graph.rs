@@ -24,7 +24,7 @@ impl Package {
 
 const DEFAULT_CACHED: bool = true;
 const DEFAULT_OUT_DIR: &str = "dist";
-const DEFAULT_INCLUDE: &[&str] = &["src/**/*"];
+const DEFAULT_INCLUDE: &[&str] = &["src/**/*", "package.json", "*.config.ts"];
 const DEFAULT_EXCLUDE: &[&str] = &[
     "**/__tests__/**",
     "**/__mocks__/**",
