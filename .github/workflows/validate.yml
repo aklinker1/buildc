@@ -31,7 +31,7 @@ jobs:
           bun buildc all
           bun buildc clean
           pushd packages/b
-            bun buildc -- echo "done"
+            bun buildc -- -- echo "done"
             bun buildc clean
             bun buildc deps && echo "done"
           popd
