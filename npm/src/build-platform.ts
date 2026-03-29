@@ -31,7 +31,7 @@ if (import.meta.main) {
 }
 
 export async function buildPlatform(platform: Platform): Promise<void> {
-  const { name, target, cross } = platform;
+  const { name, target } = platform;
   const binName = getPlatformBinName(platform);
   const packageName = getPlatformPackageName(platform);
   const ext = name.startsWith("win32") ? ".exe" : "";
