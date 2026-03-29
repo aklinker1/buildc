@@ -148,8 +148,8 @@ impl Node {
         write!(
             writer,
             "{DIM}{}{}{RESET} {CYAN}{BOLD}{}{RESET}\n",
-            "│ ".repeat(depth),
-            if is_last { "└" } else { "├" },
+            "│  ".repeat(depth),
+            if is_last { "└─" } else { "├─" },
             self.id,
         )?;
 
