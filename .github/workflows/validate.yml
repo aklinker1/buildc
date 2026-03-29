@@ -1,0 +1,37 @@
+name: Validate
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: ./.github/actions/setup
+      - run: bun check
+        working-directory: npm
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: ./.github/actions/setup
+      - run: cargo build
+      - name: Validate binary
+        working-directory: demo
+        run: |
+          bun buildc --help
+          bun buildc graph
+          bun buildc all
+          bun buildc clean
+          pushd packages/b
+            bun buildc -- echo "done"
+            bun buildc clean
+            bun buildc deps && echo "done"
+          popd
