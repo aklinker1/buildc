@@ -56,7 +56,7 @@ export async function buildPlatform(platform: Platform): Promise<void> {
 
     console.log(styleText("cyan", `\nBuilding ${name} executable`));
     await Bun.$`
-      docker run --rm -it -v $(pwd)/..:/io -w /io ${xwinDockerImage} \
+      docker run --rm -v $(pwd)/..:/io -w /io ${xwinDockerImage} \
         cargo xwin build --release --target ${target}
     `;
   } else {
@@ -68,7 +68,7 @@ export async function buildPlatform(platform: Platform): Promise<void> {
 
     console.log(styleText("cyan", `\nBuilding ${name} binary`));
     await Bun.$`
-      docker run --rm -it -v $(pwd)/..:/io -w /io ${zigBuildDockerImage} \
+      docker run --rm -v $(pwd)/..:/io -w /io ${zigBuildDockerImage} \
         cargo zigbuild --release --target ${target}
     `;
   }
