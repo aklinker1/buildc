@@ -3,7 +3,14 @@ import { getPlatformPackageName, platforms } from "./platforms";
 import { chmod } from "node:fs/promises";
 import { styleText } from "node:util";
 import { logFile } from "./utils";
-import { github, license, packageName, readmeContents } from "./constants";
+import {
+  github,
+  license,
+  packageName,
+  publishConfig,
+  readmeContents,
+  repository,
+} from "./constants";
 import { getVersion } from "./version";
 
 const outDir = `dist/${packageName}`;
@@ -52,7 +59,8 @@ await distPackageJson.write(
       cpu: ["arm64", "x64"],
       keywords: ["monorepo", "build", "cache", "orchestration"],
       license,
-      repository: github,
+      repository,
+      publishConfig,
     },
     null,
     2,

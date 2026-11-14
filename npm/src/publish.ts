@@ -13,7 +13,7 @@ const tag = version.includes("-") ? "next" : "latest";
 // are installable as soon as it's published.
 const packages = [...platforms.map(getPlatformPackageName), packageName];
 
-const args = ["--access", "public", "--tag", tag];
+const args = ["--tag", tag];
 if (dryRun) args.push("--dry-run");
 
 for (const pkg of packages) {

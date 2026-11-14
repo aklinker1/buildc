@@ -8,7 +8,12 @@ import {
 import { copyFile } from "node:fs/promises";
 import { styleText } from "node:util";
 import { logFile } from "./utils";
-import { github, license, readmeContents } from "./constants";
+import {
+  license,
+  publishConfig,
+  readmeContents,
+  repository,
+} from "./constants";
 import { getVersion } from "./version";
 
 let hasPulledCargoXwin = false;
@@ -93,7 +98,8 @@ export async function buildPlatform(platform: Platform): Promise<void> {
         version,
         description: `The "${target}" binary for @aklinker1/buildc`,
         license,
-        repository: github,
+        repository,
+        publishConfig,
         os: [parts[0]],
         cpu: [parts[1]],
       },
