@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.0-beta.2
+
+[compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.1...v2.0.0-beta.2)
+
+
 ## v2.0.0-beta.1
 
 [compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-alpha.10...v2.0.0-beta.1)
@@ -26,4 +31,3 @@
 ### ❤️ Contributors
 
 - [@aklinker1](https://github.com/aklinker1)
-
