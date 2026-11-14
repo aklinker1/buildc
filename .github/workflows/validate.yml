@@ -35,6 +35,7 @@ jobs:
           bun buildc --help
           bun buildc graph
           bun buildc all
+          bun buildc prune
           bun buildc clean
           pushd packages/b
             bun buildc -- -- echo "done"

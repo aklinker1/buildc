@@ -1,3 +1,73 @@
+# buildc
+
+Zero config CLI tool for caching package builds in monorepos.
+
+```sh
+bun add -D @aklinker1/buildc
+```
+
+Prefix any package-specific build commands you want to cache with `buildc -- `:
+
+```diff
+// packages/example/package.json
+-"build": "tsdown",
++"build": "buildc -- tsdown",
+```
+
+Now when you run the `build` script for that package, it will only rebuild the package if a file has changed.
+
+Additionally, if your package depends on one or more other packages in the monorepo, `buildc` will detect that and run those package's `build` scripts in the correct order!
+
+If you need to ensure a package's dependencies are built before running a command, use `buildc deps && `:
+
+```diff
+-"test": "vitest",
++"test": "buildc deps && vitest",
+```
+
+Only one `buildc` process builds packages at a time, so it's safe to run multiple `buildc` commands in parallel. Commands after `buildc deps &&` run after the lock is released, so they run in parallel too.
+
+##### Supports:
+
+- [x] PNPM workspaces
+- [x] Bun workspaces
+
+> Buildc ships as a native binary, installed by a `postinstall` script. If your package manager blocks lifecycle scripts, allow them for `@aklinker1/buildc`.
+
+## Config
+
+Each `package.json` can have a `buildc` field where you can configure options. Listed below are the defaults:
+
+```jsonc
+{
+  // ...,
+  "buildc": {
+    // Set to false to disable the cache-checking behavior for this package
+    "cache": true,
+    // The directory where your build is output to
+    "outDir": "dist",
+    // List of glob patterns to include when checking if the package needs rebuilt
+    "include": ["src/**/*", "package.json", "*.config.ts"],
+    // List of glob patterns to ignore when checking if the package needs rebuilt
+    "exclude": ["**/__tests__/**", "**/__mocks__/**", "**/*.test.*", "**/e2e/**", "**/dist/**", "**/.output/**"],
+  },
+}
+```
+
+## Other Commands
+
+- `buildc all`: Build all the packages in your monorepo. Can be ran from any directory inside the monorepo.
+- `buildc graph`: Print a dependency graph showing which packages depend on others.
+- `buildc clean`: Delete all build caches.
+- `buildc prune`: Delete old build caches, keeping current ones. Useful for keeping CI caches small.
+
+## Migrating from v1
+
+- `buildc --deps-only -- <cmd>` is now `buildc deps && <cmd>`.
+- The `cachable`/`cacheable` option is now `cache`.
+- The default `include`/`exclude` lists changed, see [Config](#config).
+- Debug logs are enabled with `DEBUG=buildc` instead of `DEBUG=1`.
+
 ## TODO
 
 - [x] `buildc --help`
@@ -16,7 +86,7 @@
       ./node_modules/.bin/buildc all  0.30s user 0.05s system 103% cpu 0.340 total
       ```
 - [x] Release workflow
-- [ ] Lockfile to prevent running multiple buildc commands at the same time
+- [x] Lockfile to prevent running multiple buildc commands at the same time
 - [ ] NPM package works
 - [ ] Sign macos binary
 

@@ -11,9 +11,10 @@ mod ctx;
 mod globby;
 mod graph;
 mod hash;
+mod lock;
 mod monorepo;
 
-const VERSION: &str = "2.0.0-alpha1";
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let is_debug = is_debug();
@@ -51,6 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "all" => commands::all(&ctx),
             "graph" => commands::graph(&ctx),
             "clean" | "clear" => commands::clean(&ctx),
+            "prune" => commands::prune(&ctx),
             _ => print_unknown_command(),
         },
     }
@@ -74,6 +76,7 @@ fn print_help() -> Result<(), Box<dyn std::error::Error>> {
     println!("  {BOLD}{GREEN }graph{RESET}    {DIM}          {RESET}       Print the dependency graph");
     println!();
     println!("  {BOLD}{YELLOW}clean{RESET}    {DIM}          {RESET}       Delete build cache {DIM}(buildc clear){RESET}");
+    println!("  {BOLD}{YELLOW}prune{RESET}    {DIM}          {RESET}       Delete old build caches, keeping only the current ones");
     println!();
     println!("{BOLD}Examples:{RESET}");
     println!();
