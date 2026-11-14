@@ -42,16 +42,12 @@ jobs:
       - name: Update NPM for Provenance
         run: npm i -g npm@11
 
-      # zero-changelog can't currently find the version in Cargo.toml (its regex only matches
-      # `version` on the first line), so `npm/package.json` is the version file it reads and bumps.
-      # The new version is then synced into Cargo.toml/Cargo.lock before building the binaries.
       - name: Bump and Release
-        uses: aklinker1/zero-changelog/actions/release@7040a44d413dcea5b8569676b61463ec61fb1cd4 # v0.2.4
+        uses: aklinker1/zero-changelog/actions/release@e5203d33d660b3e9c2cded7462fb33d88dbde393 # v0.2.5
         with:
           bump: ${{ inputs.bump }}
-          versionFiles: npm/package.json
+          versionFiles: Cargo.toml
           preCommitCommands: |-
-            sed -i 's/^version = ".*"/version = "{{version}}"/' Cargo.toml
             cargo update --workspace
             cd npm && bun build:all
           publishCommands: |-
