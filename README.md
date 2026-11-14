@@ -87,8 +87,11 @@ Each `package.json` can have a `buildc` field where you can configure options. L
       ```
 - [x] Release workflow
 - [x] Lockfile to prevent running multiple buildc commands at the same time
-- [ ] NPM package works
-- [ ] Sign macos binary
+- [x] NPM package works
+- [x] Works on linux
+- [ ] Works on windows
+- [ ] Works on mac
+   - [ ] Sign macos binary
 
 ## Contributing
 
