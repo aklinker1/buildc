@@ -142,23 +142,24 @@ impl Node {
     pub fn print<W: Write>(
         &self,
         writer: &mut W,
-        depth: usize,
+        prefix: &str,
         is_last: bool,
     ) -> std::io::Result<()> {
         write!(
             writer,
             "{DIM}{}{}{RESET} {CYAN}{BOLD}{}{RESET}\n",
-            "│  ".repeat(depth),
+            prefix,
             if is_last { "└─" } else { "├─" },
             self.id,
         )?;
 
         if self.children.len() > 0 {
+            let child_prefix = format!("{prefix}{}", if is_last { "   " } else { "│  " });
             let last_index = self.children.len() - 1;
             for (index, child) in self.children.iter().enumerate() {
                 child
                     .borrow()
-                    .print(writer, depth + 1, index == last_index)?;
+                    .print(writer, &child_prefix, index == last_index)?;
             }
         }
         Ok(())
@@ -266,7 +267,7 @@ impl Graph {
         for (index, package_node) in self.root.borrow().children.clone().iter().enumerate() {
             package_node
                 .borrow()
-                .print(&mut stdout, 0, index == last_index)?;
+                .print(&mut stdout, "", index == last_index)?;
         }
         Ok(())
     }
