@@ -3,11 +3,12 @@ use std::env;
 use std::path::PathBuf;
 use std::process::exit;
 
-use crate::colors::{BOLD, CYAN, DIM, GREEN, MAGENTA, RED, RESET, YELLOW};
+use crate::colors::{DIM, RESET};
 use crate::ctx::Ctx;
 use crate::graph::{Graph, Package};
 use crate::hash::hash_package;
 use crate::lock;
+use crate::log::{debug, error, progress, success, warning};
 use crate::monorepo;
 use crate::monorepo::Monorepo;
 
@@ -17,12 +18,11 @@ pub fn build(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
         // package's dependencies or check if the build is cached, we just need
         // to run the command after --. The process that triggered this build is
         // in charge of building all dependencies and checking the cache.
-        if ctx.is_debug {
-            println!(
-                "{DIM}[buildc] → Ignoring buildc, running command immediately:  {:?}{RESET}",
-                ctx.cmd_args
-            );
-        }
+        debug!(
+            ctx,
+            "Ignoring buildc, running command immediately:  {:?}",
+            ctx.cmd_args
+        );
         exec_child_command(
             std::process::Command::new(ctx.cmd_args[0]).args(ctx.cmd_args[1..].iter()),
         );
@@ -80,9 +80,7 @@ pub fn graph(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
 pub fn clean(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(monorepo) = monorepo::find() {
         let cache_dir = monorepo.cache_dir();
-        if ctx.is_debug {
-            println!("{DIM}[buildc] → Deleting cache at {:?}{RESET}", cache_dir);
-        }
+        debug!(ctx, "Deleting cache at {:?}", cache_dir);
 
         match std::fs::remove_dir_all(&cache_dir) {
             Ok(()) => {}
@@ -90,12 +88,10 @@ pub fn clean(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
             Err(err) => return Err(format!("Failed to remove cache: {err}").into()),
         }
     } else {
-        if ctx.is_debug {
-            println!("{DIM}[buildc] → Not in monorepo{RESET}");
-        }
+        debug!(ctx, "Not in monorepo");
     }
 
-    println!("{GREEN}[buildc] ✓{RESET} Cache deleted");
+    success!("Cache deleted");
     Ok(())
 }
 
@@ -103,7 +99,7 @@ pub fn prune(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
     let monorepo = require_monorepo(ctx);
     let cache_root = monorepo.cache_dir();
     if !cache_root.exists() {
-        println!("{GREEN}[buildc] ✓{RESET} Nothing to prune");
+        success!("Nothing to prune");
         return Ok(());
     }
 
@@ -154,15 +150,13 @@ pub fn prune(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
     let mut freed_bytes = 0;
     for path in &removed {
         freed_bytes += fs_extra::dir::get_size(path).unwrap_or(0);
-        if ctx.is_debug {
-            println!("{DIM}[buildc] → Removing {path:?}{RESET}");
-        }
+        debug!(ctx, "Removing {path:?}");
         let result = if path.is_dir() {
             std::fs::remove_dir_all(path)
         } else {
             std::fs::remove_file(path)
         };
-        result.unwrap_or_else(|e| println!("Failed to remove {path:?}: {e}"));
+        result.unwrap_or_else(|e| warning!("Failed to remove {path:?}: {e}"));
     }
 
     // Clean up "@scope" directories left empty after removing their packages.
@@ -172,8 +166,8 @@ pub fn prune(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    println!(
-        "{GREEN}[buildc] ✓{RESET} Pruned {} old cache entries {DIM}({:.2} MB freed){RESET}",
+    success!(
+        "Pruned {} old cache entries {DIM}({:.2} MB freed){RESET}",
         removed.len(),
         freed_bytes as f64 / 1024.0 / 1024.0
     );
@@ -184,19 +178,12 @@ pub fn prune(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
 fn require_monorepo(ctx: &Ctx) -> Monorepo {
     let monorepo = monorepo::find();
     if monorepo.is_none() {
-        println!(
-            "{YELLOW}{BOLD}[buildc] !{RESET} Monorepo root not found. Are you inside a monorepo?"
-        );
+        warning!("Monorepo root not found. Are you inside a monorepo?");
         exit(1)
     }
 
     let monorepo = monorepo.unwrap();
-    if ctx.is_debug {
-        println!(
-            "{DIM}[buildc] → Monorepo found at {:?}{RESET}",
-            monorepo.root
-        );
-    }
+    debug!(ctx, "Monorepo found at {:?}", monorepo.root);
     monorepo
 }
 
@@ -204,31 +191,25 @@ fn require_monorepo(ctx: &Ctx) -> Monorepo {
 fn require_active_package(ctx: &Ctx, graph: &Graph) -> Package {
     let active_package = graph.find_active_package();
     if active_package.is_none() {
-        eprintln!("{RED}{BOLD}[buildc] !{RESET} Not inside a package directory, could not determine dependencies to build");
+        error!("Not inside a package directory, could not determine dependencies to build");
         exit(1);
     };
     let active_package = active_package.unwrap();
-    if ctx.is_debug {
-        println!(
-            "{DIM}[buildc] → Active package {:?}{RESET}",
-            active_package.dir
-        );
-    }
+    debug!(ctx, "Active package {:?}", active_package.dir);
     active_package
 }
 
 /// Build a list of packages in the order passed in (from 0 to n), restoring each from cache if already built.
 /// Exit if something goes wrong.
 fn build_cached_packages(ctx: &Ctx, monorepo: &Monorepo, packages: Vec<Package>) {
-    if ctx.is_debug {
-        println!(
-            "{DIM}[buildc] → Packages to build: {:?}{RESET}",
-            packages
-                .iter()
-                .map(|package| &package.name)
-                .collect::<Vec<_>>()
-        );
-    }
+    debug!(
+        ctx,
+        "Packages to build: {:?}",
+        packages
+            .iter()
+            .map(|package| &package.name)
+            .collect::<Vec<_>>()
+    );
 
     // Only the builds are locked. Callers must not run any other commands
     // while holding the lock, otherwise parallel `buildc deps && <cmd>`
@@ -244,52 +225,41 @@ fn build_cached_packages(ctx: &Ctx, monorepo: &Monorepo, packages: Vec<Package>)
 fn build_cached_package(ctx: &Ctx, monorepo: &Monorepo, package: Package) {
     let build_script = package.build_script.clone();
     if package.build_script.is_none() {
-        println!(
-            "{GREEN}[buildc] ✓{RESET} {}: Nothing to build",
-            package.name
-        );
+        success!("{} {DIM}nothing to build{RESET}", package.name);
         return;
     }
     let build_script = build_script.unwrap();
 
     let mut args = monorepo.package_manager.run_cmd();
     args.push("build");
-    if ctx.is_debug {
-        println!(
-            "{DIM}[buildc] → Running {args:?} in {:?}{RESET}",
-            package.dir.strip_prefix(monorepo.root.clone()).unwrap()
-        );
-    }
-
-    // Even though we'll actually be calling `<pm> run build`, print the build
-    // script instead because it is more meaningful to the user.
-    println!(
-        "{MAGENTA}[buildc] ◐{RESET} {}: {CYAN}{build_script}{RESET}",
-        package.name
-    );
-
     let cache_dir = get_package_cache_dir(ctx, monorepo, &package);
-    if ctx.is_debug {
-        println!("{DIM}[buildc] → Cache dir: {:?}{RESET}", cache_dir);
-    }
+    debug!(ctx, "Cache dir: {:?}", cache_dir);
 
     if cache_dir.exists() && package.config.cache {
         // Skip the copy when this exact output is already in place. Besides
         // being faster, re-copying would overwrite files that another
         // process's command (ie: `buildc deps && vitest`) could be reading.
         if is_output_current(&package, &cache_dir) {
-            println!("{GREEN}[buildc] ✓{RESET} {}: Up to date!", package.name);
+            success!("{} {DIM}up to date{RESET}", package.name);
             return;
         }
         restore_package_cache(ctx, &package, &cache_dir);
         mark_output_current(&cache_dir);
-        println!("{GREEN}[buildc] ✓{RESET} {}: Cached!", package.name);
+        success!("{} {DIM}restored from cache{RESET}", package.name);
         return;
     }
 
     // The build will change the output, so it no longer matches any hash.
     clear_output_current(&cache_dir);
 
+    // Even though we'll actually be calling `<pm> run build`, print the build
+    // script instead because it is more meaningful to the user.
+    progress!("{} {DIM}{build_script}{RESET}", package.name);
+    debug!(
+        ctx,
+        "Running {args:?} in {:?}",
+        package.dir.strip_prefix(monorepo.root.clone()).unwrap()
+    );
     exec_in_dir(&package.dir, args);
 
     if package.config.cache {
@@ -297,22 +267,17 @@ fn build_cached_package(ctx: &Ctx, monorepo: &Monorepo, package: Package) {
         mark_output_current(&cache_dir);
     }
 
-    println!("{GREEN}[buildc] ✓{RESET} {}: Built", package.name);
+    success!("{} {DIM}built{RESET}", package.name);
 }
 
 /// Return the path to a package's cache based on it's current hash.
 fn get_package_cache_dir(ctx: &Ctx, monorepo: &Monorepo, package: &Package) -> PathBuf {
     let (package_hash, file_hashes) = hash_package(package).unwrap_or_else(|e| {
-        println!(
-            "{RED}{BOLD}[buildc] ✘{RESET} Error computing package hash: {}",
-            e
-        );
+        error!("Error computing package hash: {}", e);
         exit(1)
     });
-    if ctx.is_debug {
-        println!("{DIM}[buildc] → File hashes:\n{file_hashes}{RESET}");
-        println!("{DIM}[buildc] → Package hash: {package_hash}{RESET}");
-    }
+    debug!(ctx, "File hashes:\n{file_hashes}");
+    debug!(ctx, "Package hash: {package_hash}");
 
     monorepo
         .cache_dir()
@@ -351,15 +316,13 @@ fn clear_output_current(cache_dir: &PathBuf) {
 /// Copy the cache output to the package's output directory.
 fn restore_package_cache(ctx: &Ctx, package: &Package, cache_dir: &PathBuf) {
     let out_dir = package.absolute_out_dir();
-    if ctx.is_debug {
-        println!("{DIM}[buildc] → Restoring {cache_dir:?} to {out_dir:?}");
-    }
+    debug!(ctx, "Restoring {cache_dir:?} to {out_dir:?}");
     std::fs::create_dir_all(&out_dir).unwrap();
     let mut copy_options = fs_extra::dir::CopyOptions::default();
     copy_options.overwrite = true;
     copy_options.content_only = true;
     fs_extra::dir::copy(cache_dir, &out_dir, &copy_options).unwrap_or_else(|e| {
-        println!("{RED}{BOLD}[buildc] ✘{RESET} Error restoring cache: {}", e);
+        error!("Error restoring cache: {}", e);
         exit(1);
     });
 }
@@ -367,15 +330,10 @@ fn restore_package_cache(ctx: &Ctx, package: &Package, cache_dir: &PathBuf) {
 /// Copy the package's output directory to the cache directory.
 fn cache_package_output(ctx: &Ctx, package: &Package, cache_dir: &PathBuf) {
     let out_dir = package.absolute_out_dir();
-    if ctx.is_debug {
-        println!("{DIM}[buildc] → Caching {out_dir:?} to {cache_dir:?}");
-    }
+    debug!(ctx, "Caching {out_dir:?} to {cache_dir:?}");
 
     if !out_dir.exists() {
-        println!(
-            "{RED}{BOLD}[buildc] ✘{RESET} Output directory {:?} doesn't exist, cannot cache",
-            out_dir
-        );
+        error!("Output directory {:?} doesn't exist, cannot cache", out_dir);
         exit(1);
     }
 
@@ -384,7 +342,7 @@ fn cache_package_output(ctx: &Ctx, package: &Package, cache_dir: &PathBuf) {
     copy_options.overwrite = true;
     copy_options.content_only = true;
     fs_extra::dir::copy(&out_dir, cache_dir, &copy_options).unwrap_or_else(|e| {
-        println!("{RED}{BOLD}[buildc] ✘{RESET} Error caching output: {}", e);
+        error!("Error caching output: {}", e);
         exit(1);
     });
 }

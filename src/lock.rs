@@ -2,7 +2,7 @@ use std::fs::{self, File, OpenOptions, TryLockError};
 use std::path::Path;
 use std::process::exit;
 
-use crate::colors::{BOLD, DIM, MAGENTA, RED, RESET};
+use crate::log::{debug, error, progress};
 use crate::ctx::Ctx;
 
 /// Holds an exclusive lock on the monorepo's cache until dropped.
@@ -25,25 +25,23 @@ pub fn acquire(ctx: &Ctx, cache_dir: &Path) -> CacheLock {
                 .open(&lock_path)
         })
         .unwrap_or_else(|e| {
-            eprintln!("{RED}{BOLD}[buildc] ✘{RESET} Failed to open {lock_path:?}: {e}");
+            error!("Failed to open {lock_path:?}: {e}");
             exit(1);
         });
 
-    if ctx.is_debug {
-        println!("{DIM}[buildc] → Acquiring lock {lock_path:?}{RESET}");
-    }
+    debug!(ctx, "Acquiring lock {lock_path:?}");
 
     match file.try_lock() {
         Ok(()) => {}
         Err(TryLockError::WouldBlock) => {
-            println!("{MAGENTA}[buildc] ◐{RESET} Waiting for other buildc processes to finish...");
+            progress!("Waiting for other buildc processes to finish...");
             file.lock().unwrap_or_else(|e| {
-                eprintln!("{RED}{BOLD}[buildc] ✘{RESET} Failed to acquire lock: {e}");
+                error!("Failed to acquire lock: {e}");
                 exit(1);
             });
         }
         Err(TryLockError::Error(e)) => {
-            eprintln!("{RED}{BOLD}[buildc] ✘{RESET} Failed to acquire lock: {e}");
+            error!("Failed to acquire lock: {e}");
             exit(1);
         }
     }

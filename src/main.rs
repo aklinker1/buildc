@@ -12,6 +12,7 @@ mod globby;
 mod graph;
 mod hash;
 mod lock;
+mod log;
 mod monorepo;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -28,8 +29,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let buildc_args: Vec<&str> = buildc_args_slice.iter().map(|str| str.as_str()).collect();
     let cmd_args: Vec<&str> = cmd_args_slice.iter().map(|str| str.as_str()).collect();
     if is_debug {
-        println!("{DIM}[buildc] → Buildc args:  {buildc_args:?}{RESET}");
-        println!("{DIM}[buildc] → Command args: {cmd_args:?}{RESET}");
+        log::print_debug(format_args!("Buildc args:  {buildc_args:?}"));
+        log::print_debug(format_args!("Command args: {cmd_args:?}"));
     }
 
     if array_includes_either(&buildc_args, "-v", "--version") {
