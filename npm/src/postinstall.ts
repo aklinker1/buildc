@@ -1,10 +1,14 @@
 import { createRequire } from "node:module";
 import { findCurrentPlatform, getPlatformPackageName } from "./platforms";
-import { symlink } from "node:fs/promises";
+import { chmod, copyFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 const ext = process.platform === "win32" ? ".exe" : "";
 
-const targetPath = `node_modules/.bin/buildc${ext}`;
+// Replace the placeholder script that package.json#bin points to. Package
+// managers link `.bin/buildc` to this file, wherever their `.bin` dir is, and
+// the postinstall's CWD is this package's directory, not the project's.
+const targetPath = fileURLToPath(new URL("./buildc", import.meta.url));
 let sourcePath: string | undefined;
 
 const platforms = findCurrentPlatform();
@@ -26,4 +30,5 @@ if (!sourcePath) {
   process.exit(1);
 }
 
-await symlink(sourcePath, targetPath, "file");
+await copyFile(sourcePath, targetPath);
+await chmod(targetPath, 0o755);
