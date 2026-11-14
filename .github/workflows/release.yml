@@ -1,0 +1,63 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Blank (auto), a version (2.0.0-beta.1), or major/minor/patch
+        type: string
+      dryRun:
+        description: Dry Run?
+        type: boolean
+        default: false
+
+jobs:
+  validate:
+    name: Validate
+    uses: "./.github/workflows/validate.yml"
+    secrets: inherit
+
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    needs: [validate]
+    permissions:
+      contents: write # Allow pushing
+      id-token: write # Enable OIDC for NPM
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: .tool-versions
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update NPM for Provenance
+        run: npm i -g npm@11
+
+      # zero-changelog can't currently find the version in Cargo.toml (its regex only matches
+      # `version` on the first line), so `npm/package.json` is the version file it reads and bumps.
+      # The new version is then synced into Cargo.toml/Cargo.lock before building the binaries.
+      - name: Bump and Release
+        uses: aklinker1/zero-changelog/actions/release@7040a44d413dcea5b8569676b61463ec61fb1cd4 # v0.2.4
+        with:
+          bump: ${{ inputs.bump }}
+          versionFiles: npm/package.json
+          preCommitCommands: |-
+            sed -i 's/^version = ".*"/version = "{{version}}"/' Cargo.toml
+            cargo update --workspace
+            cd npm && bun build:all
+          publishCommands: |-
+            cd npm && bun src/publish.ts
+          dryRun: ${{ inputs.dryRun }}
+          dryRunPublishCommands: |-
+            cd npm && bun src/publish.ts --dry-run
+          releaseArtifacts: npm/dist/artifacts/*
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
