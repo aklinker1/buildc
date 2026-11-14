@@ -49,6 +49,7 @@ jobs:
         uses: aklinker1/zero-changelog/actions/release@7040a44d413dcea5b8569676b61463ec61fb1cd4 # v0.2.4
         with:
           bump: ${{ inputs.bump }}
+          since: v2.0.0-alpha.10
           versionFiles: npm/package.json
           preCommitCommands: |-
             sed -i 's/^version = ".*"/version = "{{version}}"/' Cargo.toml
