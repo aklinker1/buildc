@@ -84,8 +84,11 @@ pub fn clean(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
             println!("{DIM}[buildc] → Deleting cache at {:?}{RESET}", cache_dir);
         }
 
-        std::fs::remove_dir_all(monorepo.cache_dir())
-            .unwrap_or_else(|err| println!("Failed to remove cache: {err}"))
+        match std::fs::remove_dir_all(&cache_dir) {
+            Ok(()) => {}
+            Err(err) if err.kind() == std::io::ErrorKind::NotFound => {}
+            Err(err) => return Err(format!("Failed to remove cache: {err}").into()),
+        }
     } else {
         if ctx.is_debug {
             println!("{DIM}[buildc] → Not in monorepo{RESET}");
