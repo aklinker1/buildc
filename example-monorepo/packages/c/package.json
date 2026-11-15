@@ -1,9 +1,0 @@
-{
-  "name": "c",
-  "scripts": {
-    "build": "bun ../../../src/cli.ts -- -- tsup src/index.ts"
-  },
-  "dependencies": {
-    "tsup": "^8.1.0"
-  }
-}

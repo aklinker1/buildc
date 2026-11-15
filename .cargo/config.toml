@@ -1,0 +1,8 @@
+# Zig's linker doesn't reserve room in the Mach-O header for a code signature
+# on x86_64, so `rcodesign sign` fails with "insufficient room to write code
+# signature load command". Padding the header fixes that.
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-Wl,-headerpad_max_install_names"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-Wl,-headerpad_max_install_names"]

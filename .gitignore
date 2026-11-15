@@ -1,7 +1,15 @@
+# Cargo
+#
+/target
 .cache
-coverage
-*.lcov
-node_modules/
-*.tgz
-dist
+.intentionally-empty-file.o
+
+# NPM
+#
+**/dist
+**/node_modules
+
+# Misc.
+#
 .DS_Store
+*.log

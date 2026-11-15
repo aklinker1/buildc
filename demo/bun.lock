@@ -1,0 +1,32 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 0,
+  "workspaces": {
+    "": {},
+    "packages/a": {
+      "name": "a",
+      "dependencies": {
+        "b": "workspace:*",
+      },
+      "devDependencies": {
+        "c": "workspace:*",
+      },
+    },
+    "packages/b": {
+      "name": "b",
+      "devDependencies": {
+        "c": "workspace:*",
+      },
+    },
+    "packages/c": {
+      "name": "c",
+    },
+  },
+  "packages": {
+    "a": ["a@workspace:packages/a"],
+
+    "b": ["b@workspace:packages/b"],
+
+    "c": ["c@workspace:packages/c"],
+  }
+}

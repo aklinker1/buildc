@@ -1,0 +1,8 @@
+{
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "buildc": "../target/debug/aklinker1_buildc"
+  }
+}

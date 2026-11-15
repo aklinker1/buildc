@@ -1,36 +1,86 @@
-# buildc
+<div align="center">
+
+# `@aklinker1/buildc`
+
+[![NPM Version](https://img.shields.io/npm/v/%40aklinker1%2Fbuildc?logo=npm&labelColor=red&color=white)](https://www.npmjs.com/package/@aklinker1/buildc)
+[![License](https://img.shields.io/npm/l/%40aklinker1%2Fbuildc)](https://github.com/aklinker1/buildc/blob/main/LICENSE)
+[![Changelog](https://img.shields.io/badge/Changelog-blue?logo=github&logoColor=white)](https://github.com/aklinker1/buildc/blob/main/CHANGELOG.md)
 
 Zero config CLI tool for caching package builds in monorepos.
 
+</div>
+
 ```sh
-pnpm i -D buildc
+pnpm add -D @aklinker1/buildc
+bun  add -D @aklinker1/buildc
 ```
 
-Then prefix any package-specific build commands you want to cache with `buildc -- `:
+## Features
+
+- ⚡️ Only rebuilds packages when their files change
+- 🔗 Builds workspace dependencies in the correct order
+- 🔒 Safe to run in parallel, only one process builds at a time
+- 🛠️ Zero config, with per-package overrides
+- 🦀 Ships as a native binary
+
+**Supported workspaces**
+
+- ✅ PNPM
+- ✅ Bun
+
+> [!NOTE]
+> The native binary is installed by a `postinstall` script. If your package manager blocks lifecycle scripts, allow them for `@aklinker1/buildc`.
+
+## Usage
+
+Prefix any package-specific build commands you want to cache with `buildc -- `:
 
 ```diff
 // packages/example/package.json
--"build": "unbuild",
-+"build": "buildc -- unbuild",
+-"build": "tsdown",
++"build": "buildc -- tsdown",
 ```
 
 Now when you run the `build` script for that package, it will only rebuild the package if a file has changed.
 
-Additionally, if your package depends on one or more other packages in the monorepo, `buildc` will detect that and run those package's `build` scripts in the correct order!
+If your package depends on one or more other packages in the monorepo, `buildc` detects that and runs those packages' `build` scripts in the correct order.
 
-If you need to ensure a package's dependencies are built before running a command, prefix it with `buildc --deps-only --`:
+### Building Dependencies
+
+To ensure a package's dependencies are built before running a command, use `buildc deps && `:
 
 ```diff
 -"test": "vitest",
-+"test": "buildc --deps-only -- vitest",
++"test": "buildc deps && vitest",
 ```
 
-##### Supports:
+Only one `buildc` process builds packages at a time, so it's safe to run multiple `buildc` commands in parallel. Commands after `buildc deps &&` run after the lock is released, so they run in parallel too.
 
-- [x] PNPM workspaces
-- [x] Bun workspaces
+### Other Commands
 
-> Note that this is a personal tool, and I only plan on supporting the tools I use. If you want to add support for NPM or Yarn, feel free to open a PR!
+- `buildc all`: Build all the packages in your monorepo. Can be run from any directory inside the monorepo.
+- `buildc graph`: Print a dependency graph showing which packages depend on others.
+- `buildc clean`: Delete all build caches.
+- `buildc prune`: Delete old build caches, keeping current ones. Useful for keeping CI caches small.
+
+### Skipping Builds
+
+Set `BUILDC_SKIP=true` to skip building packages when running `buildc` or `buildc deps`. `buildc -- <cmd>` still runs `<cmd>`, but it doesn't build dependencies or check the cache first.
+
+This is useful in CI: once you've run `buildc all`, other commands don't need to build anything:
+
+```sh
+buildc all
+BUILDC_SKIP=true bun run test
+```
+
+### Debug Logs
+
+Set `DEBUG=buildc` to enable debug logs:
+
+```sh
+DEBUG=buildc bun run build
+```
 
 ## Config
 
@@ -41,37 +91,13 @@ Each `package.json` can have a `buildc` field where you can configure options. L
   // ...,
   "buildc": {
     // Set to false to disable the cache-checking behavior for this package
-    "cachable": true,
+    "cache": true,
     // The directory where your build is output to
     "outDir": "dist",
     // List of glob patterns to include when checking if the package needs rebuilt
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "package.json", "*.config.ts"],
     // List of glob patterns to ignore when checking if the package needs rebuilt
-    "exclude": ["**/__tests__/**", "**/*.test.*", "**/e2e/**"],
+    "exclude": ["**/__tests__/**", "**/__mocks__/**", "**/*.test.*", "**/e2e/**", "**/dist/**", "**/.output/**"],
   },
 }
 ```
-
-## Other Commands
-
-### `buildc all`
-
-Builds all the packages in your monorepo. Can be ran from any directory inside the monorepo.
-
-### `buildc graph`
-
-Prints a dependency graph showing which packages depend on others. Can be ran from any directory inside the monorepo.
-
-## Debugging
-
-To debug, set the `DEBUG` environment variable to `1`:
-
-```sh
-DEBUG=1 pnpm buildc -- unbuild
-```
-
-## Why Not NX/Turborepo?
-
-It's hard to just use the caching feature of NX/Turborepo without completely migrating to the tools, and using them instead of `pnpm`/`bun`, which more developers are familiar with. I found that since build-caching was really the only feature I used from those packages, it wasn't worth migrating to.
-
-Instead, this tools is a simpler version that doesn't add another CLI people have to memorize to use. Well, technically it does, but at the same time, it doesn't get in your way, and I bet people wouldn't even realize it was being called most the time. Which is the goal.
