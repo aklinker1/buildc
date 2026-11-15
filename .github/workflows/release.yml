@@ -30,6 +30,8 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - uses: ./.github/actions/setup-cross
+
       - uses: ./.github/actions/setup-rcodesign
 
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0

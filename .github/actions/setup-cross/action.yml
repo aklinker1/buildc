@@ -1,0 +1,28 @@
+name: Setup Cross-Compilation
+description: Install the tools used to cross-compile the native binaries, and restore their caches.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Zig
+      uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+      with:
+        version: 0.16.0
+
+    - name: Install cargo-zigbuild and cargo-xwin
+      uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2.90.5
+      with:
+        tool: cargo-zigbuild@0.24.1,cargo-xwin@0.23.1
+
+    - name: Cache Rust build
+      uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      with:
+        shared-key: cross
+
+    # Only cache the downloaded MSVC CRT and Windows SDK, not the parent dir:
+    # cargo-xwin also puts tool symlinks there that it recreates every build.
+    - name: Cache MSVC CRT and Windows SDK
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/cargo-xwin/xwin
+        key: cargo-xwin-${{ runner.os }}-${{ runner.arch }}-v0.23.1

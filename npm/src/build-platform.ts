@@ -18,9 +18,6 @@ import {
 import { getVersion } from "./version";
 import { signMacosBinary } from "./sign-macos";
 
-let hasPulledCargoXwin = false;
-let hasPulledCargoZigBuild = false;
-
 if (import.meta.main) {
   const name = process.argv[2];
   if (!name) {
@@ -34,14 +31,48 @@ if (import.meta.main) {
     process.exit(1);
   }
 
-  await buildPlatform(platform);
+  await Bun.$`rustup target add ${platform.target}`;
+  await buildPlatforms([platform]);
 }
 
-export async function buildPlatform(platform: Platform): Promise<void> {
+export async function buildPlatforms(platforms: Platform[]): Promise<void> {
+  await compile(platforms);
+  // Packaging is dominated by waiting on Apple's notary service, so do it
+  // concurrently.
+  await Promise.all(platforms.map(packagePlatform));
+}
+
+function isWindows(platform: Platform): boolean {
+  return platform.name.startsWith("win32");
+}
+
+/**
+ * Passing all targets to a single cargo invocation lets cargo build them in
+ * parallel. That matters because the release profile's fat LTO and single
+ * codegen unit leave most of each target's build on one core.
+ */
+async function compile(platforms: Platform[]): Promise<void> {
+  const windows = platforms.filter(isWindows);
+  const others = platforms.filter((p) => !isWindows(p));
+  const targetArgs = (group: Platform[]) =>
+    group.flatMap((p) => ["--target", p.target]);
+  const names = (group: Platform[]) => group.map((p) => p.name).join(", ");
+
+  if (others.length > 0) {
+    console.log(styleText("cyan", `\nBuilding ${names(others)}`));
+    await Bun.$`cargo zigbuild --release ${targetArgs(others)}`.cwd("..");
+  }
+  if (windows.length > 0) {
+    console.log(styleText("cyan", `\nBuilding ${names(windows)}`));
+    await Bun.$`cargo xwin build --release ${targetArgs(windows)}`.cwd("..");
+  }
+}
+
+async function packagePlatform(platform: Platform): Promise<void> {
   const { name, target } = platform;
   const binName = getPlatformBinName(platform);
   const packageName = getPlatformPackageName(platform);
-  const ext = name.startsWith("win32") ? ".exe" : "";
+  const ext = isWindows(platform) ? ".exe" : "";
   const binPath = `../target/${target}/release/aklinker1_buildc${ext}`;
   const artifactsDir = `dist/artifacts`;
   const artifactsBinPath = `${artifactsDir}/${binName}${ext}`;
@@ -52,43 +83,15 @@ export async function buildPlatform(platform: Platform): Promise<void> {
   const version = await getVersion();
   const parts = name.split("-", 2);
   const libc = getPlatformLibc(platform);
-  const zigBuildDockerImage = "ghcr.io/rust-cross/cargo-zigbuild";
-  const xwinDockerImage = "messense/cargo-xwin";
 
-  if (name.startsWith("win32")) {
-    if (!hasPulledCargoXwin) {
-      console.log(styleText("cyan", "\nPulling docker image"));
-      await Bun.$`docker pull ${xwinDockerImage}`;
-      hasPulledCargoXwin = true;
-    }
-
-    console.log(styleText("cyan", `\nBuilding ${name} executable`));
-    await Bun.$`
-      docker run --rm -v $(pwd)/..:/io -w /io ${xwinDockerImage} \
-        cargo xwin build --release --target ${target}
-    `;
-  } else {
-    if (!hasPulledCargoZigBuild) {
-      console.log(styleText("cyan", "\nPulling docker image"));
-      await Bun.$`docker pull ${zigBuildDockerImage}`;
-      hasPulledCargoZigBuild = true;
-    }
-
-    console.log(styleText("cyan", `\nBuilding ${name} binary`));
-    await Bun.$`
-      docker run --rm -v $(pwd)/..:/io -w /io ${zigBuildDockerImage} \
-        cargo zigbuild --release --target ${target}
-    `;
-  }
-  console.log(styleText("cyan", "\nCopying artifact"));
+  console.log(styleText("cyan", `\nCopying ${name} artifact`));
 
   await mkdir(artifactsDir, { recursive: true });
   await copyFile(binPath, artifactsBinPath);
-  // Sign the copy: the docker-built original in `target/` may be owned by root.
   if (name.startsWith("darwin")) await signMacosBinary(artifactsBinPath);
   logFile(artifactsDir, Bun.file(artifactsBinPath));
 
-  console.log(styleText("cyan", "\nGenerating NPM package"));
+  console.log(styleText("cyan", `\nGenerating ${packageName} NPM package`));
 
   await mkdir(npmPackageDir, { recursive: true });
   await copyFile(artifactsBinPath, npmBinPath);
@@ -117,5 +120,5 @@ export async function buildPlatform(platform: Platform): Promise<void> {
   );
   logFile(npmPackageDir, npmPackageJson);
 
-  console.log(`\n${styleText("green", "✓")} Done\n`);
+  console.log(`\n${styleText("green", "✓")} ${name} done\n`);
 }

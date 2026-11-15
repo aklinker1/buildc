@@ -10,7 +10,7 @@ bun install
 
 We use [`cargo-zigbuild`](https://github.com/rust-cross/cargo-zigbuild) to build Mac/Linux and [`cargo-xwin`](https://github.com/rust-cross/cargo-xwin) to build for Windows.
 
-I've tried to create the scripts in a way that will run on all operating systems. However, the docker images take up ~10GB of space...
+Both run directly on the host, so you'll need [`zig`](https://ziglang.org/download/), `cargo-zigbuild`, `cargo-xwin`, and `clang` installed. The first Windows build downloads the MSVC CRT and Windows SDK (~1GB) to `~/.cache/cargo-xwin`.
 
 You can build all targets by running the following:
 

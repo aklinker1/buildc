@@ -11,6 +11,8 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - uses: ./.github/actions/setup-cross
+
       - uses: ./.github/actions/setup-rcodesign
 
       - working-directory: npm
