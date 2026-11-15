@@ -1,9 +1,26 @@
 # Changelog
 
+## v2.0.0-beta.3
+
+[compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.2...v2.0.0-beta.3)
+
+### 🩹 Fixes
+
+- Fix musl vs libc resolution ([`358323f`](https://github.com/aklinker1/buildc/commit/358323fc8481683a80ab380450de1b7f5937241b))
+- Sign macos binary ([`42ad798`](https://github.com/aklinker1/buildc/commit/42ad7987a6128377816185cbdcc1c28a4c8af025))
+
+### 🤖 CI
+
+- Add space to for macos signing ([`495ccbd`](https://github.com/aklinker1/buildc/commit/495ccbd9ac62ebbc410324b416b29611cdf5e4b5))
+
+### ❤️ Contributors
+
+- [@aklinker1](https://github.com/aklinker1)
+
+
 ## v2.0.0-beta.2
 
 [compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.1...v2.0.0-beta.2)
-
 
 ## v2.0.0-beta.1
 
