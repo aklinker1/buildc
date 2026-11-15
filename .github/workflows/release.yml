@@ -30,6 +30,8 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - uses: ./.github/actions/setup-rcodesign
+
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version-file: .tool-versions
@@ -44,6 +46,12 @@ jobs:
 
       - name: Bump and Release
         uses: aklinker1/zero-changelog/actions/release@e5203d33d660b3e9c2cded7462fb33d88dbde393 # v0.2.5
+        env:
+          APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
         with:
           bump: ${{ inputs.bump }}
           versionFiles: Cargo.toml

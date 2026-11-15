@@ -16,6 +16,7 @@ import {
   repository,
 } from "./constants";
 import { getVersion } from "./version";
+import { signMacosBinary } from "./sign-macos";
 
 let hasPulledCargoXwin = false;
 let hasPulledCargoZigBuild = false;
@@ -83,12 +84,14 @@ export async function buildPlatform(platform: Platform): Promise<void> {
 
   await mkdir(artifactsDir, { recursive: true });
   await copyFile(binPath, artifactsBinPath);
+  // Sign the copy: the docker-built original in `target/` may be owned by root.
+  if (name.startsWith("darwin")) await signMacosBinary(artifactsBinPath);
   logFile(artifactsDir, Bun.file(artifactsBinPath));
 
   console.log(styleText("cyan", "\nGenerating NPM package"));
 
   await mkdir(npmPackageDir, { recursive: true });
-  await copyFile(binPath, npmBinPath);
+  await copyFile(artifactsBinPath, npmBinPath);
   logFile(npmPackageDir, Bun.file(npmBinPath));
 
   await npmReadme.write(readmeContents);
