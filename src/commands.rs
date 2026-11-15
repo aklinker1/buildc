@@ -13,15 +13,16 @@ use crate::monorepo;
 use crate::monorepo::Monorepo;
 
 pub fn build(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
-    if env::var("INSIDE_BUILDC").unwrap_or_default() == "true" {
+    if should_skip_builds() {
         // When inside another buildc command, we don't have to build the active
         // package's dependencies or check if the build is cached, we just need
         // to run the command after --. The process that triggered this build is
         // in charge of building all dependencies and checking the cache.
+        // BUILDC_SKIP lets users opt into the same behavior, ie: in CI after
+        // running `buildc all`.
         debug!(
             ctx,
-            "Ignoring buildc, running command immediately:  {:?}",
-            ctx.cmd_args
+            "Ignoring buildc, running command immediately:  {:?}", ctx.cmd_args
         );
         exec_child_command(
             std::process::Command::new(ctx.cmd_args[0]).args(ctx.cmd_args[1..].iter()),
@@ -43,10 +44,11 @@ pub fn build(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub fn deps(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
-    if env::var("INSIDE_BUILDC").unwrap_or_default() == "true" {
+    if should_skip_builds() {
         // When building dependencies inside another buildc command, the parent
         // will already have build the dependencies. So in this case, we return
         // immediately since theres nothing to build.
+        debug!(ctx, "Skipping dependency builds");
         return Ok(());
     }
 
@@ -172,6 +174,17 @@ pub fn prune(ctx: &Ctx) -> Result<(), Box<dyn std::error::Error>> {
         freed_bytes as f64 / 1024.0 / 1024.0
     );
     Ok(())
+}
+
+/// Returns true when `buildc` and `buildc deps` should not build anything:
+/// either a parent buildc process already handled the builds, or the user set
+/// `BUILDC_SKIP` because everything has already been built.
+fn should_skip_builds() -> bool {
+    env::var("INSIDE_BUILDC").unwrap_or_default() == "true"
+        || matches!(
+            env::var("BUILDC_SKIP").unwrap_or_default().as_str(),
+            "true" | "1"
+        )
 }
 
 /// Find the monorepo the cwd is inside, or exit.

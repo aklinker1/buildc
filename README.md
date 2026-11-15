@@ -63,6 +63,17 @@ Only one `buildc` process builds packages at a time, so it's safe to run multipl
 - `buildc clean`: Delete all build caches.
 - `buildc prune`: Delete old build caches, keeping current ones. Useful for keeping CI caches small.
 
+### Skipping Builds
+
+Set `BUILDC_SKIP=true` to skip building packages when running `buildc` or `buildc deps`. `buildc -- <cmd>` still runs `<cmd>`, but it doesn't build dependencies or check the cache first.
+
+This is useful in CI: once you've run `buildc all`, other commands don't need to build anything:
+
+```sh
+buildc all
+BUILDC_SKIP=true bun run test
+```
+
 ### Debug Logs
 
 Set `DEBUG=buildc` to enable debug logs:
