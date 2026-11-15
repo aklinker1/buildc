@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import {
   getPlatformBinName,
+  getPlatformLibc,
   getPlatformPackageName,
   platforms,
   type Platform,
@@ -49,6 +50,7 @@ export async function buildPlatform(platform: Platform): Promise<void> {
   const npmPackageJson = Bun.file(`${npmPackageDir}/package.json`);
   const version = await getVersion();
   const parts = name.split("-", 2);
+  const libc = getPlatformLibc(platform);
   const zigBuildDockerImage = "ghcr.io/rust-cross/cargo-zigbuild";
   const xwinDockerImage = "messense/cargo-xwin";
 
@@ -102,6 +104,9 @@ export async function buildPlatform(platform: Platform): Promise<void> {
         publishConfig,
         os: [parts[0]],
         cpu: [parts[1]],
+        // Without this, package managers install both the glibc and musl
+        // packages on Linux.
+        ...(libc && { libc: [libc] }),
       },
       null,
       2,
