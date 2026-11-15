@@ -1,5 +1,22 @@
 # Changelog
 
+## v2.0.0-beta.4
+
+[compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.3...v2.0.0-beta.4)
+
+### 🚀 Features
+
+- Skip builds when `BUILDC_SKIP=true` ([`d475c6a`](https://github.com/aklinker1/buildc/commit/d475c6ab1502fa778eb4fb77d9f120bb644f829d))
+
+### 📖 Documentation
+
+- Clenaup README ([`04a606e`](https://github.com/aklinker1/buildc/commit/04a606e0c9fe20ab2997f0a95f1ecc6593bdecb4))
+
+### ❤️ Contributors
+
+- [@aklinker1](https://github.com/aklinker1)
+
+
 ## v2.0.0-beta.3
 
 [compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.2...v2.0.0-beta.3)
@@ -16,7 +33,6 @@
 ### ❤️ Contributors
 
 - [@aklinker1](https://github.com/aklinker1)
-
 
 ## v2.0.0-beta.2
 
