@@ -1,10 +1,37 @@
-# buildc
+<div align="center">
+
+# `@aklinker1/buildc`
+
+[![NPM Version](https://img.shields.io/npm/v/%40aklinker1%2Fbuildc?logo=npm&labelColor=red&color=white)](https://www.npmjs.com/package/@aklinker1/buildc)
+[![License](https://img.shields.io/npm/l/%40aklinker1%2Fbuildc)](https://github.com/aklinker1/buildc/blob/main/LICENSE)
+[![Changelog](https://img.shields.io/badge/Changelog-blue?logo=github&logoColor=white)](https://github.com/aklinker1/buildc/blob/main/CHANGELOG.md)
 
 Zero config CLI tool for caching package builds in monorepos.
 
+</div>
+
 ```sh
-bun add -D @aklinker1/buildc
+pnpm add -D @aklinker1/buildc
+bun  add -D @aklinker1/buildc
 ```
+
+## Features
+
+- ⚡️ Only rebuilds packages when their files change
+- 🔗 Builds workspace dependencies in the correct order
+- 🔒 Safe to run in parallel, only one process builds at a time
+- 🛠️ Zero config, with per-package overrides
+- 🦀 Ships as a native binary
+
+**Supported workspaces**
+
+- ✅ PNPM
+- ✅ Bun
+
+> [!NOTE]
+> The native binary is installed by a `postinstall` script. If your package manager blocks lifecycle scripts, allow them for `@aklinker1/buildc`.
+
+## Usage
 
 Prefix any package-specific build commands you want to cache with `buildc -- `:
 
@@ -16,9 +43,11 @@ Prefix any package-specific build commands you want to cache with `buildc -- `:
 
 Now when you run the `build` script for that package, it will only rebuild the package if a file has changed.
 
-Additionally, if your package depends on one or more other packages in the monorepo, `buildc` will detect that and run those package's `build` scripts in the correct order!
+If your package depends on one or more other packages in the monorepo, `buildc` detects that and runs those packages' `build` scripts in the correct order.
 
-If you need to ensure a package's dependencies are built before running a command, use `buildc deps && `:
+### Building Dependencies
+
+To ensure a package's dependencies are built before running a command, use `buildc deps && `:
 
 ```diff
 -"test": "vitest",
@@ -27,12 +56,20 @@ If you need to ensure a package's dependencies are built before running a comman
 
 Only one `buildc` process builds packages at a time, so it's safe to run multiple `buildc` commands in parallel. Commands after `buildc deps &&` run after the lock is released, so they run in parallel too.
 
-##### Supports:
+### Other Commands
 
-- [x] PNPM workspaces
-- [x] Bun workspaces
+- `buildc all`: Build all the packages in your monorepo. Can be run from any directory inside the monorepo.
+- `buildc graph`: Print a dependency graph showing which packages depend on others.
+- `buildc clean`: Delete all build caches.
+- `buildc prune`: Delete old build caches, keeping current ones. Useful for keeping CI caches small.
 
-> Buildc ships as a native binary, installed by a `postinstall` script. If your package manager blocks lifecycle scripts, allow them for `@aklinker1/buildc`.
+### Debug Logs
+
+Set `DEBUG=buildc` to enable debug logs:
+
+```sh
+DEBUG=buildc bun run build
+```
 
 ## Config
 
@@ -52,55 +89,4 @@ Each `package.json` can have a `buildc` field where you can configure options. L
     "exclude": ["**/__tests__/**", "**/__mocks__/**", "**/*.test.*", "**/e2e/**", "**/dist/**", "**/.output/**"],
   },
 }
-```
-
-## Other Commands
-
-- `buildc all`: Build all the packages in your monorepo. Can be ran from any directory inside the monorepo.
-- `buildc graph`: Print a dependency graph showing which packages depend on others.
-- `buildc clean`: Delete all build caches.
-- `buildc prune`: Delete old build caches, keeping current ones. Useful for keeping CI caches small.
-
-## Migrating from v1
-
-- `buildc --deps-only -- <cmd>` is now `buildc deps && <cmd>`.
-- The `cachable`/`cacheable` option is now `cache`.
-- The default `include`/`exclude` lists changed, see [Config](#config).
-- Debug logs are enabled with `DEBUG=buildc` instead of `DEBUG=1`.
-
-## Contributing
-
-### Assumptions
-
-1. Packages depending on each other are external, and are not bundled into the final output. If package A depends on package B, package A should not need rebuilt if package B is changed, because it should import package B, not bundle it into A's output.
-
-### Manual Testing
-
-The `demo/` directory contains a Bun monorepo you can test your changes against. Before running any `bun` commands below, run `cargo build` to build the latest version of `buildc`
-
-To build a single package, `cd` into the package directory, and run `bun run build`:
-
-```sh
-cd demo/packages/b
-bun run build
-```
-
-All the package.json's have an alias for `buildc`, so you can run any `buildc` command from any demo directory:
-
-```sh
-cargo build
-
-cd demo
-bun buildc
-bun buildc graph
-cd packages
-bun buildc clean
-cd a
-bun buildc deps && echo "TODO"
-```
-
-To enable debug logs, set the `DEBUG` environment variable to "buildc" before running the command:
-
-```sh
-DEBUG=buildc bun buildc ...
 ```
