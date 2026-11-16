@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.0.0
+
+[compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.4...v2.0.0)
+
+### 🤖 CI
+
+- Speed up native builds ([`a1ed2f6`](https://github.com/aklinker1/buildc/commit/a1ed2f63fa1d0e6a3acc8d69a79b90603ef8641f))
+
+### ❤️ Contributors
+
+- [@aklinker1](https://github.com/aklinker1)
+
+
 ## v2.0.0-beta.4
 
 [compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.3...v2.0.0-beta.4)
@@ -15,7 +28,6 @@
 ### ❤️ Contributors
 
 - [@aklinker1](https://github.com/aklinker1)
-
 
 ## v2.0.0-beta.3
 

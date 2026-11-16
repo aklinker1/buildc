@@ -1,6 +1,6 @@
 [package]
 name = "aklinker1_buildc"
-version = "2.0.0-beta.4"
+version = "2.0.0"
 edition = "2021"
 # For std::fs::File::lock
 rust-version = "1.89"
