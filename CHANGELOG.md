@@ -2,11 +2,42 @@
 
 ## v2.0.0
 
-[compare changes](https://github.com/aklinker1/buildc/compare/v2.0.0-beta.4...v2.0.0)
+[compare changes](https://github.com/aklinker1/buildc/compare/v1.1.7...main)
+
+### 🚀 Features
+
+- Rewrite in rust
+- Skip builds when `BUILDC_SKIP=true` ([`d475c6a`](https://github.com/aklinker1/buildc/commit/d475c6ab1502fa778eb4fb77d9f120bb644f829d))
+- Add `buildc prune` ([`a39dbed`](https://github.com/aklinker1/buildc/commit/a39dbed47ebf48acedaff136cb4d75b00352a06d))
+
+### 🩹 Fixes
+
+- Fix bad graph drawing logic ([`0b8f67a`](https://github.com/aklinker1/buildc/commit/0b8f67a04c34869b9525be4b0183a90923a948af))
+- **clean**: Don't log error when cache dir doesn't exist ([`485681c`](https://github.com/aklinker1/buildc/commit/485681c45bf3f4b2f0422a99ba487188b56396f7))
+- Cleanup and simplify log messages ([`3478621`](https://github.com/aklinker1/buildc/commit/3478621a418c863313837d5584980c18395b2695))
+- Fix windows support ([`0974fca`](https://github.com/aklinker1/buildc/commit/0974fcab964f4ed050ce42d8244b96d82c4ef93d))
+- Add missing NPM publishing fields ([`58549fd`](https://github.com/aklinker1/buildc/commit/58549fd3080cec4daaef12610c4e09864316ef92))
+- Fix musl vs libc resolution ([`358323f`](https://github.com/aklinker1/buildc/commit/358323fc8481683a80ab380450de1b7f5937241b))
+- Sign macos binary ([`42ad798`](https://github.com/aklinker1/buildc/commit/42ad7987a6128377816185cbdcc1c28a4c8af025))
+- Skip restoring up-to-date outputs ([`a39dbed`](https://github.com/aklinker1/buildc/commit/a39dbed47ebf48acedaff136cb4d75b00352a06d))
+
+### 📖 Documentation
+
+- Clenaup README ([`04a606e`](https://github.com/aklinker1/buildc/commit/04a606e0c9fe20ab2997f0a95f1ecc6593bdecb4))
 
 ### 🤖 CI
 
+- Add release workflow ([`fe171de`](https://github.com/aklinker1/buildc/commit/fe171dec65fe49275101a8409389e9feca92d5c5))
+- Fix release workflow ([`5138c8f`](https://github.com/aklinker1/buildc/commit/5138c8f7a7cb99d2a416c7e0f883d57bda33c041))
+- Add space to for macos signing ([`495ccbd`](https://github.com/aklinker1/buildc/commit/495ccbd9ac62ebbc410324b416b29611cdf5e4b5))
 - Speed up native builds ([`a1ed2f6`](https://github.com/aklinker1/buildc/commit/a1ed2f63fa1d0e6a3acc8d69a79b90603ef8641f))
+
+### ⚠️ Breaking Changes
+
+- `buildc --deps-only -- <cmd>` is now `buildc deps && <cmd>`.
+- The `cachable`/`cacheable` option is now `cache`.
+- The default `include`/`exclude` lists changed, see [Config](https://github.com/aklinker1/buildc/blob/618ef3d25820499964b372acb8c469e2bfbf105a/README.md#config).
+- Debug logs are enabled with `DEBUG=buildc` instead of `DEBUG=1`.
 
 ### ❤️ Contributors
 
